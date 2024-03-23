@@ -68,6 +68,8 @@ if __name__ == '__main__':
         for filename in filenames:
             case_path = path.join(dirpath, filename)  # path to each case
 
+            
+
             # Concentration curve from CFD simulations
             c_curve = pd.read_csv(case_path, index_col=0, delim_whitespace=True, 
                             names=['mass_fraction', 'time'], header=None)
@@ -76,6 +78,9 @@ if __name__ == '__main__':
             # design of experiment spreadsheet
             case_num=int(filename.replace('sim', '').replace('_tracer_conc.out', ''))
             case_params = doe[doe['CASE_NUM']==case_num]
+
+            # Rename concentration file for consistency 
+            os.rename(case_path, path.join(dirpath, f"sim{case_num}.csv"))
 
             # Create save name for Et and Etheta curves
             save_name = "sim"+str(case_num)+".csv"
