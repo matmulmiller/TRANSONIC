@@ -60,30 +60,33 @@ def E_theta_generator(E_curve, artery_volume, flow_rate):
 
 
 if __name__ == '__main__':
-    C_CURVES_FOLDER = "data/C-curves"
+    C_CURVES_SRC_FOLDER = "data/raw_data/C_curves"
+    C_CURVES_DEST_FOLDER = "data/C_curves"
     doe = pd.read_csv("data/CASE_PARAMETERS.csv", header=0)
 
-    for dirpath, dirnames, filenames in os.walk(C_CURVES_FOLDER):
+    for dirpath, dirnames, filenames in os.walk(C_CURVES_SRC_FOLDER):
 
         for filename in filenames:
-            case_path = path.join(dirpath, filename)  # path to each case
+            src_path = path.join(dirpath, filename)  # path to each case
 
-            
 
             # Concentration curve from CFD simulations
-            c_curve = pd.read_csv(case_path, index_col=0, delim_whitespace=True, 
+            c_curve = pd.read_csv(src_path, index_col=0, delim_whitespace=True, 
                             names=['mass_fraction', 'time'], header=None)
             
+
             # Retrive current case number and get necessary parameters from 
             # design of experiment spreadsheet
             case_num=int(filename.replace('sim', '').replace('_tracer_conc.out', ''))
             case_params = doe[doe['CASE_NUM']==case_num]
 
-            # Rename concentration file for consistency 
-            os.rename(case_path, path.join(dirpath, f"sim{case_num}.csv"))
 
-            # Create save name for Et and Etheta curves
+            # Create save name for curves files
             save_name = "sim"+str(case_num)+".csv"
+
+            # Save C curve .csv
+            c_curve.to_csv(path.join(C_CURVES_DEST_FOLDER, save_name))
+
 
             # Create the E curve and save
             E_curve = E_curve_generator(c_curve, 
