@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: TRANSONIC
+Version: 0.1.0
+Summary: Package for the manipulation and analysis of RTDs
+Home-page: https://github.com/JacobMillerChemE/TRANSONIC
+Author: Jacob M. Miller
+Author-email: jmmill41@louisville.edu
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas>=2.2
+Requires-Dist: matplotlib>=3.8
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: numpy>=1.26
+
+# TRANSONIC
+ Transit time analysis of coronary thermodilution curves

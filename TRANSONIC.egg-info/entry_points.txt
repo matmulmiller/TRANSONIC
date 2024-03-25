@@ -1,0 +1,3 @@
+[console_scripts]
+evaluate_model = src.scripts.model_eval:main
+generate_Ecurves = src.scripts.E_curves:main

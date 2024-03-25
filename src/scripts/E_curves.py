@@ -5,7 +5,7 @@ import os.path as path
 
 
 def E_curve_generator(c_curve: pd.DataFrame, dt: float, flow_rate: float):
-    """Converts the concentration curve into the probability density function 
+    '''Converts the concentration curve into the probability density function 
     (PDF) E-curve/h-curve.
     
     Parameters:
@@ -19,7 +19,7 @@ def E_curve_generator(c_curve: pd.DataFrame, dt: float, flow_rate: float):
     - Implementation is based off of the definition of the E(t) curve: 
                         E(t) = flow_rate*C(t) / N_0
         where, N0 is the initial amount of tracer injected
-    """
+    '''
 
     E_curve = c_curve.copy(deep=True)  # creates a new df in memory
     E_curve = E_curve.rename(columns={'mass_fraction': 'Et'})
@@ -55,14 +55,16 @@ def E_theta_generator(E_curve, artery_volume, flow_rate):
     E_curve.Et = E_curve.Et * space_time
     E_curve.time = E_curve.time / space_time
     return E_curve
-    
 
+def main():
+    script_dir = path.dirname(path.abspath(__file__))
+    src_dir = path.dirname(script_dir)
+    project_dir = path.dirname(src_dir)
 
-
-if __name__ == '__main__':
-    C_CURVES_SRC_FOLDER = "data/raw_data/C_curves"
-    C_CURVES_DEST_FOLDER = "data/C_curves"
-    doe = pd.read_csv("data/CASE_PARAMETERS.csv", header=0)
+    C_CURVES_SRC_FOLDER = path.join(project_dir, "data/raw_data/C_curves")
+    C_CURVES_DEST_FOLDER = path.join(project_dir, "data/C_curves")
+    doe_path = path.join(project_dir, "data/CASE_PARAMETERS.csv")
+    doe = pd.read_csv(doe_path, header=0)
 
     for dirpath, dirnames, filenames in os.walk(C_CURVES_SRC_FOLDER):
 
@@ -98,5 +100,10 @@ if __name__ == '__main__':
                                         case_params.ARTERIAL_VOLUME.iloc[0],
                                         case_params.FLOW_RATE.iloc[0])
             E_curve.to_csv(path.join("data/Etheta_curves", save_name))
+
+
+
+if __name__ == '__main__':
+    main()
 
 

@@ -1,0 +1,9 @@
+for patient in cohort:
+    1.) Generate a patient object 
+    2.) Find the optimal model parameters for that patient  
+        2.1) Based on which curve? Multi implementation or straight to E-theta?
+    3.) Save the optimal model parameters to a list with the same index as DOE doc
+    4.) Evaluate goodnes of fit statistics for the model....
+        4.1) Some kinda of descriptive parameters (R-squared?) and histogram plot
+        4.2) Some way to look at ones which at the tails of the distribution from 4.2
+        
