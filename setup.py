@@ -14,7 +14,8 @@ setup(
         'pandas>=2.2',
         'matplotlib>=3.8',
         'pyyaml>=6.0',
-        'numpy>=1.26'
+        'numpy>=1.26',
+        'scipy>=1.12'
         ],
     entry_points={
         'console_scripts': [

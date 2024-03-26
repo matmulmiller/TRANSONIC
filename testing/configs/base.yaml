@@ -1,1 +1,5 @@
-Message: 'All I know is YAYO.'
+model: 'LFR_CSTR_WITH_BYPASS'
+
+criteria:
+  FLOW_RATE: [3.5, 3.75, 4.0]
+  PERC_DS: [50]

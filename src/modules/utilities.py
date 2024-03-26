@@ -2,24 +2,37 @@ import numpy as np
 import pandas as pd
 
 
-def type_check(value1, value2):
+def type_check(dtype, value) -> bool:
     '''
-    Checks if two values are of the same type and returns the truth value
+    Checks if the given dtype is a general match of the dtype for a given value
 
     Paramters:
-    - value1 : the base value to be compared against
-    - value2 : the given value to compare against value1
+    - dtpye : the data type you want to compare to
+    - value : the value whose data type you want to check
+
+    Returns:
+    - bool_val : A boolean value about whether the data types are generally same
 
     Notes:
-    - We first check to see if the first value has the '.item()' attribute to
-      handle values taken from pandas dataframes or numpy arrays.
+    - Trying to check if two variables, one from numpy/pandas and the other just
+      normal python data type, (e.g. int32 vs int) in a general way is like 
+      making love to a blender.
     '''
 
-    if hasattr(value1, 'item'):
-        status = isinstance(value2, type(value1.item()))
+    # Put value in numpy array to make numerica type matching easier
+    value_arr = np.array([value])
+
+    if value_arr.dtype.kind == dtype.kind:
+        bool_val = True
+    elif dtype==pd.StringDtype() and type(value)==str:
+        # B/c f*** me, pandas thought it would be cool if they had their own
+        # string data type
+        bool_val = True
     else:
-        status = isinstance(value2, type(value1))
-    return status
+        bool_val = False
+
+    return bool_val
+    
 
 
 def ID_retieval(df: pd.DataFrame, criteria: dict):
@@ -45,22 +58,27 @@ def ID_retieval(df: pd.DataFrame, criteria: dict):
             raise ValueError(f"{column} is not an existing criteria.")
         
         # Check to see if data type in criteria is same as that in df
-        if not type_check(df[column][0], values[0]):
+        if not type_check(df[column].dtype, values[0]):
             raise ValueError(f"Data types do not match for {column}. "
-                            f"{column} data type is: {type(df[column][0])}"
-                            f"and the entered value is type {type(values[0])}")
+                            f"{column} data type is: {df[column].dtype}"
+                            f" and the entered value is type {type(values[0])}")
 
         # Update filter by using the &= operatoer (e.g. True &= False -> False)
         filter_series &= df[column].isin(values)
 
     return df.index[filter_series]
+
     
 
 if __name__ == '__main__':
-    doe = pd.read_csv("data/CASE_PARAMETERS.csv")
+    doe = pd.read_csv("data/CASE_PARAMETERS.csv", 
+                      dtype={'VISCOUS_MODEL': 'string'})
+    print(doe.dtypes)
 
-    criteria = {'FLOW_RATE': [1.75, 4.0], 
-                'PERC_DS': [20, 50]}
+    criteria = {'FLOW_RATE': [4.0], 
+                'PERC_DS': [50],
+                'RAMP_ANGLE': [60],
+                'VISCOUS_MODEL': ['TURBULENT']}
 
     idxs = ID_retieval(doe, criteria)
 
