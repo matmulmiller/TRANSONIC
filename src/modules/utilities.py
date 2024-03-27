@@ -68,6 +68,14 @@ def ID_retieval(df: pd.DataFrame, criteria: dict):
 
     return df.index[filter_series]
 
+
+def relative_absolute_error(S_true, S_pred):
+    if len(S_true) != len(S_pred):
+        raise ValueError('Cannot perform RAE on sequences of different length.')
+
+    SAE = sum(np.abs(S_true - S_pred))
+    SSE = sum(np.abs(S_true - np.mean(S_true)))
+    return SAE/SSE
     
 
 if __name__ == '__main__':

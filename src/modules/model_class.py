@@ -6,9 +6,13 @@ class Model:
         self.initial_guess = initial_guess
 
     def fit(self, xdata, ydata):
-        popt, pcov = curve_fit(self.function, xdata, ydata, 
-                               bounds=self.bounds, p0=self.initial_guess)
-        self.params = popt
+        try: 
+            popt, pcov = curve_fit(self.function, xdata, ydata, 
+                                bounds=self.bounds, p0=self.initial_guess)
+            self.params = popt
+        except RuntimeError as e:
+            print(f"{e}: Couldn't find optimal parameters")
+            self.params = [0, 0, 0, 0]
     
     def predict(self, x):
         return self.function(x, *self.params)

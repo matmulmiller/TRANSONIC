@@ -15,7 +15,8 @@ setup(
         'matplotlib>=3.8',
         'pyyaml>=6.0',
         'numpy>=1.26',
-        'scipy>=1.12'
+        'scipy>=1.12',
+        'scikit-learn>=1.3'
         ],
     entry_points={
         'console_scripts': [

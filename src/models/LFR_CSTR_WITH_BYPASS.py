@@ -23,6 +23,7 @@ class LFR_CSTR_WITH_BYPASS(Model):
         Parameters: 
         - See class level doc string
         """
+
         super().__init__(initial_guess=initial_guess)
         self.dt = dt
         self.tau = tau
@@ -39,18 +40,21 @@ class LFR_CSTR_WITH_BYPASS(Model):
         Returns:
         - The calculated concentration leaving the LFR at time t
         """
+
         return (1-beta)**2 * self.tau**2 * self.dt / 2 / t**3
 
     def exp_term(self, t, a):
         """
         This is a necessary term for calculating the outlet of the CSTR
         """
+
         return np.exp(a*t)*(a*t + 1)/t**2
 
     def expi_term(self, t, a):
         """
         This is a necessary term for calculating the outlet of the CSTR
         """
+
         return a**2 * expi(a*t)
 
     def C2_func(self, t, alpha, beta):
@@ -77,7 +81,6 @@ class LFR_CSTR_WITH_BYPASS(Model):
         """
         Outputs the concentration of the whole model weighted by the fraction of
         fluid which bypasses vs the fraction of fluid that enters the CSTR. 
-
         """
 
         condition = (1-beta)*self.tau/2
