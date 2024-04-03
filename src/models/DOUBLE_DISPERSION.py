@@ -1,5 +1,4 @@
 from src.modules.model_class import Model
-from scipy.special import expi
 import numpy as np
 
 
@@ -82,6 +81,3 @@ class DOUBLE_DISPERSION(Model):
         Sums the concentration profiles for flow path 1 and flow path 2.
         """
         return self.C_1(x, Pe1, tau1) + self.C_2(x, Pe2, tau2)
-
-    # def function(self, x, Pe1, tau1):
-    #     return self.C_1(x, Pe1, tau1)

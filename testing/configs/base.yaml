@@ -1,3 +1,10 @@
 model: 'LFR_CSTR_WITH_BYPASS'
 
-results_folder: 'C:\Users\jacob\OneDrive - University of Louisville\Projects\Dissertation\PhaseI\data_analysis\TRANSONIC\TRANSONIC\results\LFR_CSTR_WITH_BYPASS'
+parameters:
+- 'alpha'
+- 'beta'
+
+parameter_bounds:
+  - [0, 0]
+  - [1, 1]
+

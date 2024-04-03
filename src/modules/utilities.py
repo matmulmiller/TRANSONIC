@@ -1,5 +1,10 @@
 import numpy as np
 import pandas as pd
+import argparse
+import yaml
+from importlib import import_module
+import os.path as path
+import os
 
 
 def type_check(dtype, value) -> bool:
@@ -76,6 +81,51 @@ def relative_absolute_error(S_true, S_pred):
     SAE = sum(np.abs(S_true - S_pred))
     SSE = sum(np.abs(S_true - np.mean(S_true)))
     return SAE/SSE
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Pull YAML file entries.')
+    parser.add_argument('-c', '--config', required=True, help='Enter location '
+                        ' of config file.')
+    return parser.parse_args()
+
+
+def load_config(path):
+    with open(path, 'r') as file:
+        config = yaml.safe_load(file)
+
+    for row in config['parameter_bounds']:
+        for i, value in enumerate(row):
+            if value == 'INF':
+                row[i] = np.inf 
+            elif value == '-INF':
+                row[i] = -np.inf
+
+    return config
+
+
+def get_model_class(module_name, class_name):
+    module = import_module(module_name)
+    return getattr(module, class_name)
+
+
+def load_DOE(project_dir):
+    doe = pd.read_csv(path.join(project_dir, "data/CASE_PARAMETERS.csv"),
+                      index_col=0, header=0, dtype={'VISCOUS_MODEL': 'string'})
+    return doe
+
+
+def create_results_folder(model_name, project_dir):
+    result_dir = path.join(project_dir, 'results', model_name)
+    os.makedirs(result_dir, exist_ok=True)
+    return result_dir
+
+
+
+
+    
+
+
     
 
 if __name__ == '__main__':

@@ -1,0 +1,11 @@
+model: 'LFR_CSTR_DZ_BYPASS'
+
+parameters:
+- 'alpha'
+- 'beta'
+- 'gamma'
+
+parameter_bounds:
+- [0.075, 0.95]
+- [0.075, 0.95]
+- [0.05, 0.95]
