@@ -70,6 +70,18 @@ def ID_retieval(df: pd.DataFrame, criteria: dict):
 
 
 def relative_absolute_error(S_true, S_pred):
+    r'''
+    Returns the relative absolute error between a predicted sequence and a ground truth sequence.
+    .. math::
+            \frac{\sum_{i=1}^{N} |(S_{i}^{true} - S_{i}^{pred})|}{\sum_{i=1}^{N} |(S_i^{true} - \overbar{S^{true}})|}
+
+    Parameters:
+    - S_true: list type value which contains the true sequence from experiment
+    - S_pred: list type value which contains the model predicted values
+
+    Returns:
+    - SAE/SSE: relative absolute error between prediction and ground truth for the given inputs
+    '''
     if len(S_true) != len(S_pred):
         raise ValueError('Cannot perform RAE on sequences of different length.')
 
