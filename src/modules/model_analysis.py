@@ -6,7 +6,7 @@
 #TODO :  Global Model Assessment
     # - Monte Carlo across alpha and beta range 
     # - Sobol indices for characterization
-# - Probably want to embed the list of residuals in the system instantiation
+        # - Shelved Sobol indices: parameters must be I.I.D
 
 import numpy as np
 from sklearn.metrics import mean_absolute_error
