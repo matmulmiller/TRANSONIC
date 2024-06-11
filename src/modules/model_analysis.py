@@ -7,6 +7,7 @@
     # - Monte Carlo across alpha and beta range 
     # - Sobol indices for characterization
         # - Shelved Sobol indices: parameters must be I.I.D
+    # - Read literature on sensitivity analysis (SA)
 
 import numpy as np
 from sklearn.metrics import mean_absolute_error
