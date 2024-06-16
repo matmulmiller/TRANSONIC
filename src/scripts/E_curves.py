@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import os
 import os.path as path
+from src.modules.utilities import create_results_folder
+from src.modules.utilities import load_DOE
 
 
 def E_curve_generator(c_curve: pd.DataFrame, dt: float, flow_rate: float):
@@ -9,7 +11,7 @@ def E_curve_generator(c_curve: pd.DataFrame, dt: float, flow_rate: float):
     (PDF) E-curve/h-curve.
     
     Parameters:
-    - dt : time step size used during CFD simulation 
+    - dt : time step size used during tracer injection
     - flow_rate : coronary flow rate in mL/s
 
     Returns:
@@ -54,33 +56,42 @@ def E_theta_generator(E_curve, artery_volume, flow_rate):
 
     E_curve.Et = E_curve.Et * space_time
     E_curve.time = E_curve.time / space_time
+    E_curve = E_curve.rename(columns={'mass_fraction': 'Etheta', 
+                                      'time': 'theta'})
     return E_curve
 
-def main():
-    script_dir = path.dirname(path.abspath(__file__))
-    src_dir = path.dirname(script_dir)
-    project_dir = path.dirname(src_dir)
+def generate_curves(wd, cCurves, doe_path):
+    # Define save location for C curves and create folder
+    C_CURVES_DEST_FOLDER = path.join(wd, 'C_curves')
+    os.makedirs(C_CURVES_DEST_FOLDER, exist_ok=True)
+    os.makedirs(path.join(wd, 'E_curves'), exist_ok=True)
+    os.makedirs(path.join(wd, 'Etheta_curves'), exist_ok=True)
 
-    C_CURVES_SRC_FOLDER = path.join(project_dir, "data/raw_data/C_curves")
-    C_CURVES_DEST_FOLDER = path.join(project_dir, "data/C_curves")
-    doe_path = path.join(project_dir, "data/CASE_PARAMETERS.csv")
-    doe = pd.read_csv(doe_path, header=0)
+    # Load DOE document for getting case parameters
+    doe = load_DOE(doe_path)
 
-    for dirpath, dirnames, filenames in os.walk(C_CURVES_SRC_FOLDER):
+    # Iterate over every concentration curve in the data directory.
+    for dirpath, dirnames, filenames in os.walk(cCurves):
 
         for filename in filenames:
-            src_path = path.join(dirpath, filename)  # path to each case
-
+            # Path to each concentration curve in cCurves directory
+            src_path = path.join(dirpath, filename)  
 
             # Concentration curve from CFD simulations
-            c_curve = pd.read_csv(src_path, index_col=0, delim_whitespace=True, 
-                            names=['mass_fraction', 'time'], header=None)
-            
+            c_curve = pd.read_csv(src_path, 
+                                  index_col=0, 
+                                  sep='\s+', 
+                                  names=['mass_fraction', 'time'],
+                                  header=None)
+        
 
             # Retrive current case number and get necessary parameters from 
             # design of experiment spreadsheet
-            case_num=int(filename.replace('sim', '').replace('_tracer_conc.out', ''))
-            case_params = doe[doe['CASE_NUM']==case_num]
+            case_num=int(
+                    filename.replace('sim', '').replace('_tracer_conc.out', '')
+            )
+            
+            case_params = doe.loc[case_num]
 
 
             # Create save name for curves files
@@ -92,18 +103,16 @@ def main():
 
             # Create the E curve and save
             E_curve = E_curve_generator(c_curve, 
-                                        case_params.TIMESTEP_SIZE.iloc[0], 
-                                        case_params.FLOW_RATE.iloc[0])
-            E_curve.to_csv(path.join("data/Et_curves", save_name))
+                                        case_params.TIMESTEP_SIZE, 
+                                        case_params.FLOW_RATE)
+            E_curve.to_csv(path.join(wd,'E_curves', save_name))
 
             E_theta = E_theta_generator(E_curve, 
-                                        case_params.ARTERIAL_VOLUME.iloc[0],
-                                        case_params.FLOW_RATE.iloc[0])
-            E_curve.to_csv(path.join("data/Etheta_curves", save_name))
+                                        case_params.ARTERIAL_VOLUME,
+                                        case_params.FLOW_RATE)
+            E_curve.to_csv(path.join(wd, 'Etheta_curves', save_name))
 
 
 
-if __name__ == '__main__':
-    main()
 
 

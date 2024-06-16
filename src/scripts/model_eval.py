@@ -6,21 +6,23 @@ from src.modules.utilities import *
 import numpy as np
 from tqdm import tqdm
 from src.modules.model_analysis import MAE_calc, residual_analysis
+from src.scripts.E_curves import *
 
 # MANUAL CHANGES YOU HAVE TO MAKE
-## - C0 between diffusion and ideal reacto models
+## - C0 between diffusion and ideal reactor models
 
 
 def main():
-    # Get location path that script is being run from
-    script_dir = path.dirname(path.abspath(__file__))
-    src_dir = path.dirname(script_dir)
-    project_dir = path.dirname(src_dir)
-
 
     # Parse args and load config file from YAML
     args = parse_args()
     config = load_config(args.config)
+
+    # Create results folder
+    results_folder = create_results_folder(config['wd'])
+
+    # Generate the E curves and E_theta curves
+    generate_curves(config['wd'], config['input'], config['doe'])
 
 
     # Get the desired model class from config file
@@ -29,7 +31,7 @@ def main():
 
 
     # Load design of experiments document
-    doe = load_DOE(project_dir)
+    doe = load_DOE(config['doe'])
 
 
     # Create pandas series with same index for fitted params and metrics
@@ -43,14 +45,12 @@ def main():
 
                           index=doe.index)
 
-    # Create results folder
-    results_folder = create_results_folder(model_name, project_dir)
     
     # Iterate through all each system provided in the DOE document
     for id in tqdm(doe.index):
 
         # Instantiate system and get parameters that define the system from doe
-        S = System(id)
+        S = System(id, config['wd'])
         S.get_system_characteristics(doe)
 
 

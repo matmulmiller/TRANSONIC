@@ -1,0 +1,5 @@
+- [ ] Formalize input requirements 
+	- [ ] Location of RTD files 
+	- [ ] Location some kind of table that provides the necessary parameters 
+		  for each case
+
