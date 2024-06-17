@@ -17,12 +17,13 @@ class System:
     - Etheta : the E curve normalized by space time
     """
     
-    def __init__(self, ID):
+    def __init__(self, ID, wd):
         """
         Initializes the class instance and grabs the experimental curve data
         """
 
         self.ID = ID
+        self.wd = wd
         self.C = self.curve_return('C')
         self.Et = self.curve_return('Et')
         self.Etheta = self.curve_return('Etheta')
@@ -34,9 +35,9 @@ class System:
         a class attribute of the same name
         """
         
-        path_dict = {'C': 'data/C_curves',
-                    'Et': 'data/Et_curves',
-                    'Etheta': 'data/Etheta_curves'}
+        path_dict = {'C': f'{self.wd}/C_curves',
+                    'Et': f'{self.wd}/E_curves',
+                    'Etheta': f'{self.wd}/Etheta_curves'}
         
         if curve_type not in path_dict:
             # Raise error if user has messed with valid curve types

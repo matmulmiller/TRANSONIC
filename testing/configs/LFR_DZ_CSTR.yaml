@@ -1,5 +1,11 @@
 model: 'LFR_DZ_CSTR'
 
+doe: 'data/DOE_mini.csv'
+
+wd: 'results/run1'
+
+input: 'data/raw_data/C_curves_mini'
+
 parameters:
 - 'alpha'
 - 'beta'

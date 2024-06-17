@@ -87,6 +87,7 @@ def relative_absolute_error(S_true, S_pred):
     Returns:
     - SAE/SSE: relative absolute error between prediction and ground truth for the given inputs
     '''
+
     if len(S_true) != len(S_pred):
         raise ValueError('Cannot perform RAE on sequences of different length.')
 
@@ -121,14 +122,14 @@ def get_model_class(module_name, class_name):
     return getattr(module, class_name)
 
 
-def load_DOE(project_dir):
-    doe = pd.read_csv(path.join(project_dir, "data/CASE_PARAMETERS.csv"),
-                      index_col=0, header=0, dtype={'VISCOUS_MODEL': 'string'})
+def load_DOE(doe_path):
+    doe = pd.read_csv(doe_path, index_col=0, header=0, 
+                      dtype={'VISCOUS_MODEL': 'string'})
     return doe
 
 
-def create_results_folder(model_name, project_dir):
-    result_dir = path.join(project_dir, 'results', model_name)
+def create_results_folder(wd):
+    result_dir = path.join(wd, 'results')
     os.makedirs(result_dir, exist_ok=True)
     return result_dir
 
