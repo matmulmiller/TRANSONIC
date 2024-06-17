@@ -1,10 +1,15 @@
-model: 'LFR_CSTR_WITH_BYPASS'
+model: 'LFR_DZ_CSTR'
+
+doe: 'data/CASE_PARAMETERS.csv'
+
+wd: 'results/run1'
+
+input: 'data/raw_data/C_curves'
 
 parameters:
 - 'alpha'
 - 'beta'
 
 parameter_bounds:
-  - [0, 0]
-  - [1, 1]
-
+- [0.01, 0.99]
+- [0.01, 0.99]
