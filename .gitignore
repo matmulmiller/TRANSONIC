@@ -1,6 +1,4 @@
 data/
-notebooks/
-results/
 data/CASE_PARAMETERS_MODEL.csv
 data/CASE_PARAMETERS_PATIENTS.csv
 data/CASE_PARAMETERS.csv

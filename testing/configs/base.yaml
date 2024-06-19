@@ -1,10 +1,10 @@
 model: 'LFR_DZ_CSTR'
 
-doe: 'data/CASE_PARAMETERS.csv'
+doe: 'C:\Users\jacob\OneDrive - University of Louisville\Projects\Dissertation\PhaseI\Excel_Sheets\patient_DOE.csv'
 
-wd: 'results/run1'
+wd: 'results/run2'
 
-input: 'data/raw_data/C_curves'
+input: 'C:\Users\jacob\OneDrive - University of Louisville\Projects\Dissertation\PhaseI\realPatients\PATIENT_RESULTS\Ccurves'
 
 parameters:
 - 'alpha'

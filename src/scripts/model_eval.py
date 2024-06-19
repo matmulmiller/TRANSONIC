@@ -45,7 +45,7 @@ def main():
 
                           index=doe.index)
 
-    
+    case_nums = [1, 2, 3, 4, 5] 
     # Iterate through all each system provided in the DOE document
     for id in tqdm(doe.index):
 
@@ -92,8 +92,8 @@ def main():
 
         # Visualize each fitted line
         plt.figure()
-        plt.plot(S.C.time, S.C.mass_fraction, label='CFD')
-        plt.plot(S.C_pred.time, S.C_pred.mass_fraction, label='Predicted', linestyle='--')
+        plt.plot(S.Etheta.time, S.Etheta.Et, label='CFD')
+        plt.plot(S.Etheta_pred.time, S.Etheta_pred.Et, label='Predicted', linestyle='--')
         plt.title(f'Q={S.X.FLOW_RATE} mL/s, %DS={S.X.PERC_DS}, SRA={S.X.RAMP_ANGLE}\u00B0')
         plt.legend()
         plt.xlabel('Normalized Time')
