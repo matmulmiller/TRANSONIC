@@ -17,7 +17,8 @@ setup(
         'numpy>=1.26',
         'scipy>=1.12',
         'scikit-learn>=1.3',
-        'tqdm>=4.65'
+        'tqdm>=4.65',
+        'salib>=1.5'
         ],
     entry_points={
         'console_scripts': [
