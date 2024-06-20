@@ -25,9 +25,11 @@ def type_check(dtype, value) -> bool:
     '''
 
     # Put value in numpy array to make numerica type matching easier
-    value_arr = np.array([value])
+    # value_arr = np.array([value])
 
-    if value_arr.dtype.kind == dtype.kind:
+    if type(value) == dtype:
+        bool_val = True
+    elif dtype==np.int32 and type(value)==int:
         bool_val = True
     elif dtype==pd.StringDtype() and type(value)==str:
         # B/c f*** me, pandas thought it would be cool if they had their own
