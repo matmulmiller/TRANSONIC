@@ -123,12 +123,21 @@ def get_model_class(module_name, class_name):
 
 
 def load_DOE(doe_path):
+    '''
+        Loads the CSV file created by the user which indexes all the 
+        RTD runs/experiments that have corresponding concentration curves
+        to be fit against. 
+    '''
     doe = pd.read_csv(doe_path, index_col=0, header=0, 
                       dtype={'VISCOUS_MODEL': 'string'})
     return doe
 
 
 def create_results_folder(wd):
+    '''
+        Creates a separate directory for results to store all the figures
+        from the model_eval.py script like the RTD vs. the model fit. 
+    '''
     result_dir = path.join(wd, 'results')
     os.makedirs(result_dir, exist_ok=True)
     return result_dir
