@@ -24,31 +24,43 @@ def type_check(dtype, value) -> bool:
       making love to a blender.
     '''
 
-    # Put value in numpy array to make numerica type matching easier
-    # value_arr = np.array([value])
+    try: 
 
-    if type(value) == dtype:
-        bool_val = True
-    elif dtype==np.int32 and type(value)==int:
-        bool_val = True
-    elif dtype==pd.StringDtype() and type(value)==str:
-        # B/c f*** me, pandas thought it would be cool if they had their own
-        # string data type
-        bool_val = True
-    else:
-        bool_val = False
+        if type(value) == dtype:
+            bool_val = True
+        elif dtype==np.int32 and type(value)==int:
+            bool_val = True
+        elif dtype==pd.StringDtype() and type(value)==str:
+            # B/c f*** me, pandas thought it would be cool if they had their own
+            # string data type
+            bool_val = True
+        else:
+            bool_val = False
 
-    return bool_val
-    
+        return bool_val
+
+    except TyperError as e:
+        # Raised if value can't be convert to numpy for example
+        print(f"Type Error: {e}")
+        return False
+    except ValueError as e:
+        # Raised if dtype is not a valid numpy data type 
+        print(f"Value Error: {e}")
+        return False
+    except Exception as e:
+        print(f"Unexpected Error: {e}")
+        return False 
+        
 
 
-def ID_retieval(df: pd.DataFrame, criteria: dict):
+
+def ID_retrieval(df: pd.DataFrame, criteria: dict):
     '''
     Returns the indices of the given DataFrame where a set of criteria is true.
 
     Parameters:
-    - df : This is the design of experiments document where parametrs are kept
-    - critiera : a dictionary of the form {'critiera': [value1, value2, ...]}
+    - df : This is the design of experiments document where parameters are kept
+    - criteria : a dictionary of the form {'critiera': [value1, value2, ...]}
 
     Returns:
     - A pd.Series object of the indices/labels where the criteria are met. 
@@ -135,12 +147,6 @@ def create_results_folder(wd):
     os.makedirs(result_dir, exist_ok=True)
     return result_dir
 
-
-
-
-    
-
-
     
 
 if __name__ == '__main__':
@@ -153,6 +159,6 @@ if __name__ == '__main__':
                 'RAMP_ANGLE': [60],
                 'VISCOUS_MODEL': ['TURBULENT']}
 
-    idxs = ID_retieval(doe, criteria)
+    idxs = ID_retrieval(doe, criteria)
 
     print(idxs)
