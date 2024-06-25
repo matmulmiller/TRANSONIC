@@ -3,7 +3,7 @@
 
 ## Statement of Purpose
 
-**fill
+Unlock the power of RTD insights: Rapidly prototype, visualize, and optimize transport models to drive solutions to your transit time problems.
 
 ## SETUP
 
@@ -26,16 +26,17 @@ python -m pip install .
 
 ## Running your first case
 
-To test out your setup, we have included an example dataset "example dataset path". To execute the analysis from scratch execute
+To test out your setup, we have included an example dataset "examples/stenosed_tube". To execute the analysis from scratch execute
 
 ```
-# fill in
+python3 -m src.script.model_eval -c testing/configs/base.yaml
 ```
 
 ## General case flow
-
-** Here we can put that flow diagram you made Miller
+The general algorithm for running TRANSONIC on experimental datasets: 
+![alt text](image.png)
 
 ## Example of provided results
 
-**fill
+A visual comparison of a Tanks-in-Series, Taylor-Dispersion, and user-defined model against experimental data:
+ ![alt text](image-1.png)
