@@ -1,10 +1,10 @@
 model: 'LFR_DZ_CSTR'
 
-doe: 'data/DOE_mini.csv'
+doe: 'C:\Users\jacob\OneDrive - University of Louisville\Projects\Dissertation\PhaseI\data_analysis\TRANSONIC\TRANSONIC\data\CASE_PARAMETERS_MODEL.csv'
 
-wd: 'results/run1'
+wd: 'C:\Users\jacob\OneDrive - University of Louisville\Projects\Dissertation\PhaseI\data_analysis\TRANSONIC\TRANSONIC\results\LFR_DZ_CSTR'
 
-input: 'data/raw_data/C_curves_mini'
+input: 'C:\Users\jacob\OneDrive - University of Louisville\Projects\Dissertation\PhaseI\data_analysis\TRANSONIC\TRANSONIC\data\C_curves'
 
 parameters:
 - 'alpha'
