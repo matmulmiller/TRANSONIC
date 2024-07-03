@@ -29,7 +29,7 @@ python -m pip install .
 To test out your setup, we have included an example dataset "examples/stenosed_tube". To execute the analysis from scratch execute
 
 ```
-python3 -m src.script.model_eval -c testing/configs/base.yaml
+python3 -m src.transonic.main -c testing/configs/base.yaml
 ```
 
 ## General case flow
