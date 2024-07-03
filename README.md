@@ -34,9 +34,9 @@ python3 -m src.transonic.main -c testing/configs/base.yaml
 
 ## General case flow
 The general algorithm for running TRANSONIC on experimental datasets: 
-![alt text](image.png)
+![alt text](imgs/image.png)
 
 ## Example of provided results
 
 A visual comparison of a Tanks-in-Series, Taylor-Dispersion, and user-defined model against experimental data:
- ![alt text](image-1.png)
+ ![alt text](imgs/image-1.png)
