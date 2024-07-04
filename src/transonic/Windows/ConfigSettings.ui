@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>694</width>
+    <height>610</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QComboBox" name="model_select">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>30</y>
+     <width>431</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>LFR DZ CSTR</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Taylor Dispersion</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Tanks in Series</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>40</y>
+     <width>76</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Model</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="make_config">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>497</y>
+     <width>171</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Make Config</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="doe_path">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>90</y>
+     <width>431</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>testing/DOE.csv</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="default_bounds">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>330</y>
+     <width>181</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Use default bounds</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>90</y>
+     <width>91</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>DOE path</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>150</y>
+     <width>151</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Working Directory</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="work_dir">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>150</y>
+     <width>431</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>examples/stenosed_tube</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="input_path">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>200</y>
+     <width>431</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>examples/stenosed_tube/C__curves</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>200</y>
+     <width>151</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Data Input Path</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="default_parameters">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>280</y>
+     <width>221</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Use default parameters</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>400</y>
+     <width>231</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Currently only LFR DZ CSTR
+ works for this GUI.
+ The paths are the example
+ data.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="cwd_label">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>240</y>
+     <width>571</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CWD: </string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
