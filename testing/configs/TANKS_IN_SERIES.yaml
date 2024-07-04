@@ -1,0 +1,13 @@
+model: 'TANKS_IN_SERIES'
+
+doe: 'examples/stenosed_tube/DOE.csv'
+
+wd: 'examples/stenosed_tube'
+
+input: 'examples/stenosed_tube/C_curves'
+
+parameters:
+- 'n'
+
+parameter_bounds:
+- [1, 50]
