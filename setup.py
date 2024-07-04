@@ -17,7 +17,7 @@ setup(
         'numpy>=1.26',
         'scipy>=1.12',
         'scikit-learn>=1.3',
-        'tqdm>=4.65'
+        'tqdm>=4.65',
         'pyqt>=5.15.7'
         ],
     entry_points={
