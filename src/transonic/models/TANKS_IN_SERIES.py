@@ -16,7 +16,6 @@ class TANKS_IN_SERIES(Model):
     - tau : the spacetime of the reactor defined by volume / flow rate
     - bounds : the bounds for the model parameters which are optimized for
     - C0 : initial concnetration CALCULATED BY N0 / TOTAL REACTOR MASS
-    - rho : density of fluid
 
     """
 
@@ -32,7 +31,8 @@ class TANKS_IN_SERIES(Model):
         self.dt = dt
         self.tau = tau
         self.bounds = bounds
-        self.C0 = 1e-06 * C0 * rho # unit conversion mL^3 -> m^3
+        self.C0 = C0
+        self.rho = rho
     
     def C_1(self, t: float, n: float) -> np.array:
         """
@@ -48,8 +48,7 @@ class TANKS_IN_SERIES(Model):
         """
 
         tau_i = self.tau / n       
-        n = math.floor(n)
-        return self.C0 * (t**(n-1) / (math.factorial(n-1) * tau_i**(n))) * (np.exp(-t/tau_i))
+        return self.dt * self.C0 * (t**(n-1) / (math.gamma(n-1) * tau_i**(n))) * (np.exp(-t/tau_i))
 
     
     def function(self, t, n):
