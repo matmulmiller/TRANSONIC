@@ -64,8 +64,8 @@ def generate_curves(wd, cCurves, doe_path):
     # Define save location for C curves and create folder
     C_CURVES_DEST_FOLDER = path.join(wd, 'results/C_curves')
     os.makedirs(C_CURVES_DEST_FOLDER, exist_ok=True)
-    os.makedirs(path.join(wd, 'E_curves'), exist_ok=True)
-    os.makedirs(path.join(wd, 'Etheta_curves'), exist_ok=True)
+    os.makedirs(path.join(wd, 'results/E_curves'), exist_ok=True)
+    os.makedirs(path.join(wd, 'results/Etheta_curves'), exist_ok=True)
 
     # Load DOE document for getting case parameters
     doe = load_DOE(doe_path)
@@ -106,12 +106,12 @@ def generate_curves(wd, cCurves, doe_path):
                 E_curve = E_curve_generator(c_curve, 
                                             case_params.TIMESTEP_SIZE, 
                                             case_params.FLOW_RATE)
-                E_curve.to_csv(path.join(wd,'E_curves', save_name))
+                E_curve.to_csv(path.join(wd,'results/E_curves', save_name))
 
                 E_theta = E_theta_generator(E_curve, 
                                             case_params.ARTERIAL_VOLUME,
                                             case_params.FLOW_RATE)
-                E_curve.to_csv(path.join(wd, 'Etheta_curves', save_name))
+                E_curve.to_csv(path.join(wd, 'results/Etheta_curves', save_name))
 
 
 
