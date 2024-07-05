@@ -25,5 +25,5 @@ class TestTypeCheck(unittest.TestCase):
         self.assertFalse(type_check(np.int32, {'key': 'value'}))
 
 
-if __name__ == '__main':
+if __name__ == '__main__':
     unittest.main()
