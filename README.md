@@ -13,9 +13,9 @@ git clone "https:github.com/matmulmiller/TRANSONIC"
 ```
 For best practices, it is best to create a new python virtual environment to contain the package dependencies. You can do this by running 
 
-'''
+```
 conda env create -f environment.yaml
-'''
+```
 
 Please note that this step is necessary to have a working GUI for TRANSONIC.
 
