@@ -68,10 +68,6 @@ def main():
     return 0
     
 if __name__ == '__main__':
-    try:
-        return_code = main()
-    except OSError as e:
-        print("\nNo file or directory error\n")
-        return_code = 1
+    return_code = main()
     print(f'Return Code: {return_code}')
 
