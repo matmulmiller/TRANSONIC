@@ -23,7 +23,7 @@ class Model:
         Returns: 
         - Nothing, but sets model attribute "params" to optimally found parameters
         '''
-
+        
         result = differential_evolution(self.objective, 
                                         self.bounds, 
                                         args=(xdata, ytrue),

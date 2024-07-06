@@ -41,7 +41,6 @@ def main():
         index=doe.index
     )
 
-    
     for id in tqdm(doe.index):
 
         S = System(id, config['wd'])
