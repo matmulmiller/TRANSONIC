@@ -4,6 +4,7 @@ notebooks/
 results/
 *.csv
 *.pyc
+*__pycache__*
 data/CASE_PARAMETERS_MODEL.csv
 data/CASE_PARAMETERS_PATIENTS.csv
 data/CASE_PARAMETERS.csv
