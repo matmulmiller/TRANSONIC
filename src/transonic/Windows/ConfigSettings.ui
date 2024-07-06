@@ -29,12 +29,12 @@
    </item>
    <item>
     <property name="text">
-     <string>Taylor Dispersion</string>
+     <string>Tanks in Series</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>Tanks in Series</string>
+     <string>Taylor Dispersion</string>
     </property>
    </item>
   </widget>
@@ -142,7 +142,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>examples/stenosed_tube/C__curves</string>
+    <string>examples/stenosed_tube/raw_data/C_curves</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">

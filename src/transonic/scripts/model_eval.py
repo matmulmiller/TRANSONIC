@@ -58,7 +58,8 @@ def residual_analysis(S_true, S_pred):
 
 
 def fit_model(model_class, model_config, system_attr, config):
-    
+
+
     model_instance = model_class(
         system_attr.X.TIMESTEP_SIZE, 
         system_attr.X.tau, 

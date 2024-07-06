@@ -35,9 +35,9 @@ class System:
         a class attribute of the same name
         """
         
-        path_dict = {'C': f'{path.join(self.wd,'results/')}C_curves',
-                    'Et': f'{path.join(self.wd,'results/')}E_curves',
-                    'Etheta': f'{path.join(self.wd,'results/')}Etheta_curves'}
+        path_dict = {'C': f"{path.join(self.wd,'results/')}C_curves",
+                    'Et': f"{path.join(self.wd,'results/')}E_curves",
+                    'Etheta': f"{path.join(self.wd,'results/')}Etheta_curves"}
         
         if curve_type not in path_dict:
             # Raise error if user has messed with valid curve types

@@ -38,6 +38,14 @@ To test out your setup, we have included an example dataset "examples/stenosed_t
 python3 -m src.transonic.main -c testing/configs/base.yaml
 ```
 
+## Using the GUI
+
+For a more user-friendly experience, the GUI can be used by executing
+
+```
+python3 sr/transonic/src/scripts/gui.py
+```
+
 ## General case flow
 The general algorithm for running TRANSONIC on experimental datasets: 
 ![alt text](imgs/image.png)

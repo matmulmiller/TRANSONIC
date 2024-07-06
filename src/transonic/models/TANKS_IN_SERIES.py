@@ -60,6 +60,7 @@ class TANKS_IN_SERIES(Model):
     def objective(self, params, tdata, ytrue):
 
         n = params
+
         
         y_predicted = self.function(tdata, n)
 
