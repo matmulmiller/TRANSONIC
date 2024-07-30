@@ -4,7 +4,11 @@ notebooks/
 results/
 *.csv
 *.pyc
-*__pycache__*
+*pycache*
+*.egg*
+*.egg
+build/lib/src/__init__.py
+build/lib/src/transonic/__init__.py
 data/CASE_PARAMETERS_MODEL.csv
 data/CASE_PARAMETERS_PATIENTS.csv
 data/CASE_PARAMETERS.csv
