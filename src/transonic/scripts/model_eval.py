@@ -57,18 +57,23 @@ def residual_analysis(S_true, S_pred):
     return mu, sigma
 
 
-def fit_model(model_class, model_config, system_attr, config):
+def fit_model(model_class, model_name, system_attr, config):
+    attrs = system_attr.X
+
+    if model_name=='TAYLOR_DISPERSION':
+        C0=attrs.FLOW_RATE*10**-6 * attrs.TIMESTEP_SIZE / attrs.ARTERIAL_VOLUME
+    else:
+        C0=1
 
 
     model_instance = model_class(
-        system_attr.X.TIMESTEP_SIZE, 
-        system_attr.X.tau, 
-        bounds=config['parameter_bounds'],
-        initial_guess=[0.5, 0.5, 0.5]
+        attrs.TIMESTEP_SIZE, 
+        attrs.tau, 
+        C0=C0,
+        bounds=config['parameter_bounds']
     )
 
     model_instance.fit(system_attr.C.time, system_attr.C.mass_fraction)
-
     
     return model_instance
 
