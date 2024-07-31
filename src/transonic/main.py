@@ -65,6 +65,12 @@ def main():
 
     # Save results to specified results folder in config file
     summary_df.to_csv(path.join(results_folder, 'eval_outputs.csv'))
+
+    #plot_parser_dict = S.plotter().plot_parser_dict
+
+    for plt_idx, plot in enumerate(config['plots']):
+        S.plotter().plot_parser_dict[plot](filename=config['plot_filenames'][plt_idx])
+
     return 0
     
 if __name__ == '__main__':

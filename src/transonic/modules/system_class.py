@@ -1,6 +1,7 @@
 import pandas as pd 
 import numpy as np
 import os.path as path
+from src.transonic.modules.plotter import Plotter
 
 
 class System:
@@ -96,6 +97,9 @@ class System:
         self.Etheta_pred = self.Et_pred.copy(deep=True)
         self.Etheta_pred.Et = self.Etheta_pred.Et * self.X.tau
         self.Etheta_pred.time = self.Etheta_pred.time/self.X.tau
+    
+    def plotter(self):
+        return Plotter(t=self.Et.time, y_gt=self.Et.Et, y_pred=self.Et_pred.Et)
     
 
 if __name__ == '__main__':
