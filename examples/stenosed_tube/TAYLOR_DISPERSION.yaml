@@ -1,0 +1,15 @@
+model: 'TAYLOR_DISPERSION'
+
+doe: 'examples/stenosed_tube/DOE.csv'
+
+wd: 'examples/stenosed_tube'
+
+input: 'examples/stenosed_tube/raw_data/C_curves'
+
+parameters:
+- 'Pe'
+- 'tau'
+
+parameter_bounds:
+- [0.1, 100]
+- [0.001, 10]

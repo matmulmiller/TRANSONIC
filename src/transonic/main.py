@@ -46,7 +46,7 @@ def main():
         S = System(id, config['wd'])
         S.get_system_characteristics(doe)
 
-        model_instance = fit_model(model_class, None, S, config)
+        model_instance = fit_model(model_class, config['model'], S, config)
 
         S.predicted_curves(S.C.time, model_instance.predict(S.C.time))
 

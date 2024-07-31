@@ -110,8 +110,11 @@ def load_config(path):
 
 
 def get_model_class(module_name, class_name):
-    module = import_module(module_name)
-    return getattr(module, class_name)
+    try: 
+        module = import_module(module_name)
+        return getattr(module, class_name)
+    except ValueError as e:
+        print(f"Unexpected Error: {e}")
 
 
 def load_DOE(doe_path):
