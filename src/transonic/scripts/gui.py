@@ -1,7 +1,11 @@
 import sys
+import os
+import pandas as pd
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 from PyQt5.uic import loadUi
-import os
+from src.transonic.modules.utilities import solve, load_config, get_model_class, load_DOE, create_results_folder
+from src.transonic.scripts.E_curves import generate_curves
 
 default_params ={
     'LFR_DZ_CSTR': '\n- [0.01, 0.99]\n- [0.01, 0.99]',
@@ -62,6 +66,45 @@ class MainWindow(QMainWindow):
 
         #Buttons
         self.config_button.clicked.connect(self.create_config)
+        self.run_button.clicked.connect(self.run_config)
+    
+    def run_config(self):
+
+        config_path = 'tmp/config.yaml'
+        config = load_config(config_path)
+        results_folder = create_results_folder(config['wd'])
+
+        # Generates the E curves and E_theta curves
+        generate_curves(config['wd'], config['input'], config['doe'])
+
+
+        # Grabs the desired model class specified in config file
+        model_name = config['model']
+        model_class = get_model_class(
+            f"src.transonic.models.{model_name}", 
+            model_name
+        )
+
+
+        # Load design of experiments document
+        doe = load_DOE(config['doe'])
+
+
+        summary_df = pd.DataFrame(
+            columns=[
+                *config['parameters'],
+                'RAE',
+                'MAE', 
+                'avg_residual', 
+                'std_of_residual'], 
+            index=doe.index
+        )
+
+        solve(doe.index, config, results_folder, model_class, doe, summary_df)#kinda hacky :/ sorry. 
+                        #i only did this so that the gui function could eventually use the utilities file and not self-reference the main
+        
+        # Save results to specified results folder in config file
+        summary_df.to_csv(os.path.join(results_folder, 'eval_outputs.csv'))
 
     def create_config(self):
         print("Creating config file...")

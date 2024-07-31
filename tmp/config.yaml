@@ -1,4 +1,4 @@
-model: 'TANKS_IN_SERIES'
+model: 'LFR_DZ_CSTR'
 
 doe: 'testing/DOE.csv'
 
@@ -7,7 +7,9 @@ wd: 'examples/stenosed_tube'
 input: 'examples/stenosed_tube/raw_data/C_curves'
 
 parameters:
-- 'n'
+- [0.01, 0.99]
+- [0.01, 0.99]
 
 parameter_bounds: 
-- [1, '105']
+- [0.01, 0.99]
+- [0.01, 0.99]

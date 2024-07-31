@@ -5,6 +5,10 @@ import yaml
 from importlib import import_module
 import os.path as path
 import os
+from tqdm import tqdm
+from src.transonic.modules.system_class import System
+from src.transonic.scripts.model_eval import fit_model, generate_model_summary, append_model_summary, visualize_fit
+
 
 
 def type_check(dtype, value) -> bool:
@@ -89,9 +93,10 @@ def ID_retrieval(df: pd.DataFrame, criteria: dict):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Pull YAML file entries.')
-    parser.add_argument('-c', '--config', required=True, help='Enter location '
-                        ' of config file.')
+    parser = argparse.ArgumentParser(description='Pull YAML file entries and optionally add GUI.')
+    # parser.add_argument('--config','-c', required=False, const=None help='Enter location '
+    #                     ' of config file.')
+    parser.add_argument('--gui', '-w', action='store_true', help='Deploys the GUI.')
     return parser.parse_args()
 
 
@@ -125,7 +130,25 @@ def create_results_folder(wd):
     os.makedirs(result_dir, exist_ok=True)
     return result_dir
 
-    
+def solve(index, config, results_folder, model_class, doe, summary_df):
+    for id in tqdm(index):
+        print("made it here at least")
+        S = System(id, config['wd'])
+        S.get_system_characteristics(doe)
+
+        model_instance = fit_model(model_class, None, S, config)
+
+        S.predicted_curves(S.C.time, model_instance.predict(S.C.time))
+
+        metrics = generate_model_summary(S) 
+
+        summary_df = append_model_summary(
+            summary_df, 
+            id, 
+            metrics, 
+            model_instance
+        )
+        visualize_fit(S, results_folder)
 
 if __name__ == '__main__':
     doe = pd.read_csv("data/CASE_PARAMETERS.csv", 

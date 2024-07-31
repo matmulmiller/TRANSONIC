@@ -16,6 +16,7 @@ src/transonic/models/LFR_CSTR_PFR_PARALLEL.py
 src/transonic/models/LFR_CSTR_WITH_BYPASS.py
 src/transonic/models/LFR_DZ_CSTR.py
 src/transonic/models/SINGLE_DISPERSION.py
+src/transonic/models/TANKS_IN_SERIES.py
 src/transonic/models/__init__.py
 src/transonic/modules/__init__.py
 src/transonic/modules/model_analysis.py

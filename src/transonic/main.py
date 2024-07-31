@@ -1,17 +1,45 @@
 import pandas as pd
 import os.path as path
+import sys
 
+from PyQt5.QtWidgets import QApplication
 from tqdm import tqdm
 from src.transonic.scripts.E_curves import *
 from src.transonic.modules.system_class import System
-from src.transonic.modules.utilities import *
+from src.transonic.modules.utilities import parse_args, solve, load_config, get_model_class, load_DOE, create_results_folder
 from src.transonic.scripts.model_eval import *
+from src.transonic.scripts.gui import MainWindow
 
-
-def main():
+def split():
 
     args = parse_args()
-    config = load_config(args.config)
+    print(args)
+    if args.gui:
+        print("GUI mode engaged")
+        gui_main()
+        return 0
+    else:
+        try:
+            cli_main()
+            pass
+        except Exception as e:
+            print(f"{e}")
+            return 1
+        else:
+            return 1
+
+def gui_main():
+    app = QApplication(sys.argv)
+    mainWindow = MainWindow()
+    mainWindow.show()
+    sys.exit(app.exec_())
+    return 0
+
+
+def cli_main():
+
+    args_config = input("Type directory: example: testing/configs/base.yaml\n\t~")
+    config = load_config(args_config)
 
     results_folder = create_results_folder(config['wd'])
 
@@ -41,33 +69,14 @@ def main():
         index=doe.index
     )
 
-    for id in tqdm(doe.index):
-
-        S = System(id, config['wd'])
-        S.get_system_characteristics(doe)
-
-        model_instance = fit_model(model_class, None, S, config)
-
-        S.predicted_curves(S.C.time, model_instance.predict(S.C.time))
-
-        metrics = generate_model_summary(S) 
-
-        summary_df = append_model_summary(
-            summary_df, 
-            id, 
-            metrics, 
-            model_instance
-        )
-
-
-        visualize_fit(S, results_folder)
-
-
+    solve(doe.index, config, results_folder, model_class, doe, summary_df)#kinda hacky :/ sorry. 
+                    #i only did this so that the gui function could eventually use the utilities file and not self-reference the main
+    
     # Save results to specified results folder in config file
     summary_df.to_csv(path.join(results_folder, 'eval_outputs.csv'))
     return 0
     
 if __name__ == '__main__':
-    return_code = main()
+    return_code = split()
     print(f'Return Code: {return_code}')
 
