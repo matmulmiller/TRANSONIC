@@ -113,10 +113,12 @@ def load_config(path):
 
     return config
 
-
-def get_model_class(module_name, class_name):
+def get_model_class(config_yaml_data):
+    model_name = config_yaml_data['model']
+    module_name = f"src.transonic.models.{model_name}"
     module = import_module(module_name)
-    return getattr(module, class_name)
+    return getattr(module, model_name)
+
 
 
 def load_DOE(doe_path):
@@ -130,9 +132,19 @@ def create_results_folder(wd):
     os.makedirs(result_dir, exist_ok=True)
     return result_dir
 
-def solve(index, config, results_folder, model_class, doe, summary_df):
-    for id in tqdm(index):
-        print("made it here at least")
+def solve(doe: pd.DataFrame, config: dict, results_dir: str, model_class) -> pd.DataFrame:
+
+    summary_df = pd.DataFrame(
+        columns=[
+            *config['parameters'],
+            'RAE',
+            'MAE', 
+            'avg_residual', 
+            'std_of_residual'], 
+        index=doe.index
+    )
+
+    for id in tqdm(doe.index):
         S = System(id, config['wd'])
         S.get_system_characteristics(doe)
 
@@ -148,7 +160,9 @@ def solve(index, config, results_folder, model_class, doe, summary_df):
             metrics, 
             model_instance
         )
-        visualize_fit(S, results_folder)
+        visualize_fit(S, results_dir)
+        
+    return summary_df
 
 if __name__ == '__main__':
     doe = pd.read_csv("data/CASE_PARAMETERS.csv", 

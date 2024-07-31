@@ -10,25 +10,18 @@ from src.transonic.modules.utilities import parse_args, solve, load_config, get_
 from src.transonic.scripts.model_eval import *
 from src.transonic.scripts.gui import MainWindow
 
-def split():
+def interface() -> int:
 
     args = parse_args()
-    print(args)
     if args.gui:
-        print("GUI mode engaged")
+        print("GUI mode engaged.")
         gui_main()
-        return 0
     else:
-        try:
-            cli_main()
-            pass
-        except Exception as e:
-            print(f"{e}")
-            return 1
-        else:
-            return 1
+        print("CLI mode engaged.")
+        cli_main()
+    return 0
 
-def gui_main():
+def gui_main() -> int:
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
@@ -36,47 +29,38 @@ def gui_main():
     return 0
 
 
-def cli_main():
-
-    args_config = input("Type directory: example: testing/configs/base.yaml\n\t~")
-    config = load_config(args_config)
-
-    results_folder = create_results_folder(config['wd'])
+def cli_main() -> int:
+    
+    config_path = input("Please provide the directory of the config file.\n\t~")
+    
+    if os.path.exists(config_path) == False:
+        print(f"Warning: No file found in the provided path: {config_path}")
+    
+    try: 
+        config_data = load_config(config_path)
+        results_dir = create_results_folder(config_data['wd'])
+    except FileNotFoundError:
+        print(f"Error in finding config file.\n")
+        pass
 
     # Generates the E curves and E_theta curves
-    generate_curves(config['wd'], config['input'], config['doe'])
-
+    generate_curves(config_data['wd'], config_data['input'], config_data['doe'])
 
     # Grabs the desired model class specified in config file
-    model_name = config['model']
-    model_class = get_model_class(
-        f"src.transonic.models.{model_name}", 
-        model_name
-    )
-
+    model_class = get_model_class(config_data)
 
     # Load design of experiments document
-    doe = load_DOE(config['doe'])
+    doe = load_DOE(config_data['doe'])
 
-
-    summary_df = pd.DataFrame(
-        columns=[
-            *config['parameters'],
-            'RAE',
-            'MAE', 
-            'avg_residual', 
-            'std_of_residual'], 
-        index=doe.index
-    )
-
-    solve(doe.index, config, results_folder, model_class, doe, summary_df)#kinda hacky :/ sorry. 
-                    #i only did this so that the gui function could eventually use the utilities file and not self-reference the main
+    # Solve for the given system
+    summary_df = solve(doe, config_data, results_dir, model_class)
     
     # Save results to specified results folder in config file
-    summary_df.to_csv(path.join(results_folder, 'eval_outputs.csv'))
+    summary_df.to_csv(path.join(results_dir, 'eval_outputs.csv'))
+    print(f"Results created! They can be found in {results_dir}/eval_outputs.csv\n")
     return 0
     
 if __name__ == '__main__':
-    return_code = split()
+    return_code = interface()
     print(f'Return Code: {return_code}')
 

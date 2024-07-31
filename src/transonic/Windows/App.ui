@@ -55,6 +55,19 @@ File</string>
 Results</string>
     </property>
    </widget>
+   <widget class="QLabel" name="warning_label">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>230</y>
+      <width>231</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

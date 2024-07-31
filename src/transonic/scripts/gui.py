@@ -37,9 +37,9 @@ class ConfigSettings(QWidget):
         elif model == 1:
             model = 'TANKS_IN_SERIES'
          
-        doe_path  = self.doe_path.displayText()
-        work_dir = self.work_dir.displayText()
-        input_path = self.input_path.displayText()
+        self.doe_path  = self.doe_path.displayText()
+        self.wd = self.wd.displayText()
+        self.input_path = self.input_path.displayText()
 
         if self.default_parameters.isChecked() == True:
             parameters = default_params[model]
@@ -47,12 +47,9 @@ class ConfigSettings(QWidget):
         if self.default_bounds.isChecked() == True: 
             param_bounds = default_bounds[model]
 
-        if not os.path.exists("./tmp"):
-            tmp_dir = "./tmp"
-            os.makedirs(tmp_dir)
         try:
-            with open("./tmp/config.yaml","w") as f:
-                f.write(f"model: \'{model}\'\n\ndoe: \'{doe_path}\'\n\nwd: \'{work_dir}\'\n\ninput: \'{input_path}\'\n\nparameters:{parameters}\n\nparameter_bounds: {param_bounds}")
+            with open(os.path.join((self.results_dir),"config.yaml"),"w") as f:
+                f.write(f"model: \'{model}\'\n\ndoe: \'{self.doe_path}\'\n\nwd: \'{self.wd}\'\n\ninput: \'{self.input_path}\'\n\nparameters:{parameters}\n\nparameter_bounds: {param_bounds}")
         except:
             print("Failure! Something went wrong trying to generate the file")
         print("Success! Config file generated")
@@ -64,47 +61,46 @@ class MainWindow(QMainWindow):
         loadUi("./src/transonic/Windows/App.ui", self)
         self.setWindowTitle("TRANSONIC")
 
+        self.config_path = "testing/configs/base.yaml"
+        self.wd = "examples/stenosed_tube"
+        self.doe_path = "testing/DOE.csv"
+
         #Buttons
         self.config_button.clicked.connect(self.create_config)
         self.run_button.clicked.connect(self.run_config)
     
     def run_config(self):
 
-        config_path = 'tmp/config.yaml'
-        config = load_config(config_path)
-        results_folder = create_results_folder(config['wd'])
+        config_path = self.config_path
+    
+        if os.path.exists(config_path) == False:
+            self.warning_label.SetText(f"Warning: No file found in the provided path: {config_path}")
+        
+        try: 
+            config_data = load_config(config_path)
+            results_dir = create_results_folder(config_data['wd'])
+        except FileNotFoundError:
+            print(f"Error in finding config file.\n")
+            pass
 
         # Generates the E curves and E_theta curves
-        generate_curves(config['wd'], config['input'], config['doe'])
-
+        generate_curves(config_data['wd'], config_data['input'], config_data['doe'])
 
         # Grabs the desired model class specified in config file
-        model_name = config['model']
-        model_class = get_model_class(
-            f"src.transonic.models.{model_name}", 
-            model_name
-        )
-
+        model_class = get_model_class(config_data)
 
         # Load design of experiments document
-        doe = load_DOE(config['doe'])
+        doe = load_DOE(config_data['doe'])
 
-
-        summary_df = pd.DataFrame(
-            columns=[
-                *config['parameters'],
-                'RAE',
-                'MAE', 
-                'avg_residual', 
-                'std_of_residual'], 
-            index=doe.index
-        )
-
-        solve(doe.index, config, results_folder, model_class, doe, summary_df)#kinda hacky :/ sorry. 
-                        #i only did this so that the gui function could eventually use the utilities file and not self-reference the main
+        # Solve for the given system
+        summary_df = solve(doe, config_data, results_dir, model_class)
         
         # Save results to specified results folder in config file
-        summary_df.to_csv(os.path.join(results_folder, 'eval_outputs.csv'))
+        summary_df.to_csv(os.path.join(results_dir, 'eval_outputs.csv'))
+        print(f"Results created! They can be found in {results_dir}/eval_outputs.csv\n")
+
+
+        
 
     def create_config(self):
         print("Creating config file...")

@@ -60,7 +60,7 @@ def E_theta_generator(E_curve, artery_volume, flow_rate):
                                       'time': 'theta'})
     return E_curve
 
-def generate_curves(wd, cCurves, doe_path):
+def generate_curves(wd: str, cCurves: str, doe_path: str) -> None:
     # Define save location for C curves and create folder
     C_CURVES_DEST_FOLDER = path.join(wd, 'results/C_curves')
     os.makedirs(C_CURVES_DEST_FOLDER, exist_ok=True)
