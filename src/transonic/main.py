@@ -68,8 +68,15 @@ def main():
 
     #plot_parser_dict = S.plotter().plot_parser_dict
 
-    for plt_idx, plot in enumerate(config['plots']):
-        S.plotter().plot_parser_dict[plot](filename=config['plot_filenames'][plt_idx])
+    if config['plots']:
+
+        for plt_idx, plot in enumerate(config['plots']):
+            S.plotter().plot_parser_dict[plot](filename=config['plot_filenames'][plt_idx])
+    else:
+        plot_desired=input('Analysis is finished, would you like a plot? If not type "n" \n Types include: pred_vs_gt (Predicted E Curve vs. Ground Truth E-curve)\n')
+
+        if plot_desired!='n':
+            S.plotter().plot_parser_dict[plot](filename='requested_plot.png')
 
     return 0
     
