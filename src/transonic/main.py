@@ -1,7 +1,9 @@
 import pandas as pd
 import os.path as path
 import sys
+import PyQt5
 
+from PyQt5 import QtCore, QtGui, uic, QtWidgets
 from PyQt5.QtWidgets import QApplication
 from tqdm import tqdm
 from src.transonic.scripts.E_curves import *
@@ -14,6 +16,11 @@ def interface() -> int:
 
     args = parse_args()
     if args.gui:
+        if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+
+        if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
         print("GUI mode engaged.")
         gui_main()
     else:
