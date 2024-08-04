@@ -61,6 +61,7 @@ def E_theta_generator(E_curve, artery_volume, flow_rate):
     return E_curve
 
 def generate_curves(wd: str, cCurves: str, doe_path: str) -> None:
+    print(f"{cCurves}")
     # Define save location for C curves and create folder
     C_CURVES_DEST_FOLDER = path.join(wd, 'results/C_curves')
     os.makedirs(C_CURVES_DEST_FOLDER, exist_ok=True)
@@ -69,10 +70,8 @@ def generate_curves(wd: str, cCurves: str, doe_path: str) -> None:
 
     # Load DOE document for getting case parameters
     doe = load_DOE(doe_path)
-
     # Iterate over every concentration curve in the data directory.
     for dirpath, dirnames, filenames in os.walk(cCurves):
-
         for filename in filenames:
             if filename.endswith('.out'):
             # Path to each concentration curve in cCurves directory

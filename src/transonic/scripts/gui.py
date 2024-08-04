@@ -54,6 +54,7 @@ class ConfigSettings(QWidget):
             print("Failure! Something went wrong trying to generate the file")
         print("Success! Config file generated")
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -61,7 +62,7 @@ class MainWindow(QMainWindow):
         loadUi("./src/transonic/Windows/App.ui", self)
         self.setWindowTitle("TRANSONIC")
 
-        self.config_path = "testing/configs/base.yaml"
+        self.config_path = "tmp/config.yaml"
         self.wd = "examples/stenosed_tube"
         self.doe_path = "testing/DOE.csv"
 
