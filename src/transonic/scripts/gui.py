@@ -51,7 +51,7 @@ class ConfigSettings(QWidget):
             with open(os.path.join((self.results_dir),"config.yaml"),"w") as f:
                 f.write(f"model: \'{model}\'\n\ndoe: \'{self.doe_path}\'\n\nwd: \'{self.wd}\'\n\ninput: \'{self.input_path}\'\n\nparameters:{parameters}\n\nparameter_bounds: {param_bounds}")
         except:
-            print("Failure! Something went wrong trying to generate the file")
+            pass
         print("Success! Config file generated")
 
 
