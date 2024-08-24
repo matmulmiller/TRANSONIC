@@ -1,9 +1,12 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QAction
-from PyQt5.uic import loadUi
-from PyQt5.QtGui import  QKeySequence
 import os
-import subprocess
+import pandas as pd
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox
+from PyQt5.uic import loadUi
+from src.transonic.modules.utilities import solve, load_config, get_model_class, load_DOE, create_results_folder
+from src.transonic.scripts.E_curves import generate_curves
+from PyQt5.QtCore import pyqtSignal
 
 default_params ={
     'LFR_DZ_CSTR': '\n- [0.01, 0.99]\n- [0.01, 0.99]',
@@ -15,24 +18,24 @@ default_bounds ={
     'TANKS_IN_SERIES': '\n- [1, \'105\']'
 }
 
-tmp_dir = 'tmp'
-tmp_config_file = 'tmp/config.yaml'
-
 class ConfigSettings(QWidget):
+    # Define a signal to emit when the configuration is done
+    config_updated = pyqtSignal(dict)
+
     def __init__(self):
         super().__init__()
         
-        #Initialize
         loadUi("./src/transonic/Windows/ConfigSettings.ui", self)
         self.setWindowTitle("Config Settings")
-        self.cwd_label.setText(f"CWD: {os.getcwd()}")
-        self.cwd_label.adjustSize()
 
         #Buttons
         self.make_config.clicked.connect(self.create_config_file)
         
         #Actions
+        self.cwd_label.setText(f"CWD: {os.getcwd()}")
 
+        #Initialize variables
+        self.tmp_dir = ''
     
     def create_config_file(self):
         model = self.model_select.currentIndex()
@@ -41,9 +44,9 @@ class ConfigSettings(QWidget):
         elif model == 1:
             model = 'TANKS_IN_SERIES'
          
-        doe_path  = self.doe_path.displayText()
-        work_dir = self.work_dir.displayText()
-        input_path = self.input_path.displayText()
+        self.doe_path  = self.doe_path.displayText()
+        self.wd = self.wd.displayText()
+        self.input_path = self.input_path.displayText()
 
         if self.default_parameters.isChecked() == True:
             parameters = default_params[model]
@@ -51,76 +54,95 @@ class ConfigSettings(QWidget):
         if self.default_bounds.isChecked() == True: 
             param_bounds = default_bounds[model]
 
-        if not os.path.exists(tmp_dir):
-            os.makedirs(tmp_dir)
+
+        self.tmp_dir = os.path.join(self.wd, 'tmp')
+        if not os.path.exists(self.tmp_dir):
+            os.makedirs(self.tmp_dir)
+        
+
         try:
-            with open(tmp_config_file,"w") as f:
-                f.write(f"model: \'{model}\'\n\ndoe: \'{doe_path}\'\n\nwd: \'{work_dir}\'\n\ninput: \'{input_path}\'\n\nparameters:{parameters}\n\nparameter_bounds: {param_bounds}")
+            with open(os.path.join((self.tmp_dir),"config.yaml"),"w") as f:
+                f.write(f"model: \'{model}\'\n\ndoe: \'{self.doe_path}\'\n\nwd: \'{self.wd}\'\n\ninput: \'{self.input_path}\'\n\nparameters:{parameters}\n\nparameter_bounds: {param_bounds}")
         except:
-            print("Failure! Something went wrong trying to generate the file")
+            pass
         print("Success! Config file generated")
+        
+        # Emit signal with updated configuration data
+        self.config_updated.emit(self.get_path_attributes())
+        self.close()        
+
+    def get_path_attributes(self):
+        return {
+            'config_path':os.path.join(self.tmp_dir, 'config.yaml'),
+            'doe_path': self.doe_path,
+            'wd': self.wd,
+            'input_path': self.input_path,
+        }
+
+    def closeEvent(self, event):
+        # Handle any additional cleanup if needed
+        super().closeEvent(event)
+
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         
-        #initialize
         loadUi("./src/transonic/Windows/App.ui", self)
         self.setWindowTitle("TRANSONIC")
-        self.completion_label.setText(" ")
-
-        #Actions
-        close_app = QAction("Exit", self)
-        close_app.setShortcut(QKeySequence.Quit)
-        close_app.triggered.connect(self.close)
-        self.addAction(close_app)
-        
-        # Keyboard shortcuts
-        close_app_keybinding = QShortcut(QKeySequence("Ctrl+W"), self)
-        close_app_keybinding.activated.connect(self.close)
 
         #Buttons
         self.config_button.clicked.connect(self.create_config)
-        self.run_button.clicked.connect(self.run_main)
-
-
+        self.run_button.clicked.connect(self.run_config)
+    
     def create_config(self):
-        print("Creating config file...")
-        if not os.path.exists(tmp_dir):
-            os.makedirs(tmp_dir)
-
+        print('Creating config file...')
         self.config_settings = ConfigSettings()
+        self.config_settings.config_updated.connect(self.handle_config_updated)
         self.config_settings.show()
-            
-    def run_main(self):
-        print("Attempting to run model based on setup...")
-        self.completion_label.setText("Model running...")
-        self.completion_label.adjustSize()
-        QApplication.processEvents()
+
+    def handle_config_updated(self, path_attributes):
+        # Process the config data after the window is closed
+        self.path_attrs = path_attributes
+
+
+    def run_config(self):
+
+        config_path = self.path_attrs['config_path']
+    
+        if os.path.exists(config_path) == False:
+            self.warning_label.setText(f"Warning: No file found in the provided path: {config_path}")
         
-        try:
-            main_path = 'src/transonic/main.py'
-            flag = '-c'
-            if os.path.exists(tmp_config_file):
-                subprocess.run(['python3',main_path, flag, tmp_config_file])
-                print("Main.py successfully ran")
-                self.completion_label.setText("Complete")
-                self.completion_label.adjustSize()
-            else:
-                print("No config file")
-                self.completion_label.setText("Model did not run.")
-                self.completion_label.adjustSize()
+        try: 
+            config_data = load_config(config_path)
+            results_dir = create_results_folder(config_data['wd'])
+        except FileNotFoundError:
+            print(f"Error in finding config file.\n")
+            pass
 
-            if self.del_after_run.isChecked() == True:
-                try:
-                    os.remove(tmp_config_file)
-                    os.rmdir(tmp_dir)
-                except:
-                    print("\nError in deleting tmp folder\n")
-        except Exception as e:
-            print(f"Error in running main")
-                  
+        # Generates the E curves and E_theta curves
+        generate_curves(config_data['wd'], config_data['input'], config_data['doe'])
 
+        # Grabs the desired model class specified in config file
+        model_class = get_model_class(config_data)
+
+        # Load design of experiments document
+        doe = load_DOE(config_data['doe'])
+
+        # Solve for the given system
+        summary_df = solve(doe, config_data, results_dir, model_class)
+        
+        # Save results to specified results folder in config file
+        summary_df.to_csv(os.path.join(results_dir, 'eval_outputs.csv'))
+        print(f"Results created! They can be found in {results_dir}/eval_outputs.csv\n")
+
+        
+
+
+
+
+            
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -4,7 +4,7 @@ doe: 'examples/stenosed_tube/DOE.csv'
 
 wd: 'examples/stenosed_tube'
 
-input: 'examples/stenosed_tube/C_curves'
+input: 'examples/stenosed_tube/raw_data/C_curves'
 
 plots: ['pred_vs_gt']
 
