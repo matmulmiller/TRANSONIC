@@ -142,7 +142,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>examples/stenosed_tube/raw_data_C_curves</string>
+    <string>examples/stenosed_tube/raw_data/C_curves</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">

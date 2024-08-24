@@ -2,10 +2,11 @@ import sys
 import os
 import pandas as pd
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox
 from PyQt5.uic import loadUi
 from src.transonic.modules.utilities import solve, load_config, get_model_class, load_DOE, create_results_folder
 from src.transonic.scripts.E_curves import generate_curves
+from PyQt5.QtCore import pyqtSignal
 
 default_params ={
     'LFR_DZ_CSTR': '\n- [0.01, 0.99]\n- [0.01, 0.99]',
@@ -18,6 +19,9 @@ default_bounds ={
 }
 
 class ConfigSettings(QWidget):
+    # Define a signal to emit when the configuration is done
+    config_updated = pyqtSignal(dict)
+
     def __init__(self):
         super().__init__()
         
@@ -29,6 +33,9 @@ class ConfigSettings(QWidget):
         
         #Actions
         self.cwd_label.setText(f"CWD: {os.getcwd()}")
+
+        #Initialize variables
+        self.tmp_dir = ''
     
     def create_config_file(self):
         model = self.model_select.currentIndex()
@@ -47,12 +54,35 @@ class ConfigSettings(QWidget):
         if self.default_bounds.isChecked() == True: 
             param_bounds = default_bounds[model]
 
+
+        self.tmp_dir = os.path.join(self.wd, 'tmp')
+        if not os.path.exists(self.tmp_dir):
+            os.makedirs(self.tmp_dir)
+        
+
         try:
-            with open(os.path.join((self.results_dir),"config.yaml"),"w") as f:
+            with open(os.path.join((self.tmp_dir),"config.yaml"),"w") as f:
                 f.write(f"model: \'{model}\'\n\ndoe: \'{self.doe_path}\'\n\nwd: \'{self.wd}\'\n\ninput: \'{self.input_path}\'\n\nparameters:{parameters}\n\nparameter_bounds: {param_bounds}")
         except:
             pass
         print("Success! Config file generated")
+        
+        # Emit signal with updated configuration data
+        self.config_updated.emit(self.get_path_attributes())
+        self.close()        
+
+    def get_path_attributes(self):
+        return {
+            'config_path':os.path.join(self.tmp_dir, 'config.yaml'),
+            'doe_path': self.doe_path,
+            'wd': self.wd,
+            'input_path': self.input_path,
+        }
+
+    def closeEvent(self, event):
+        # Handle any additional cleanup if needed
+        super().closeEvent(event)
+
 
 
 class MainWindow(QMainWindow):
@@ -62,20 +92,27 @@ class MainWindow(QMainWindow):
         loadUi("./src/transonic/Windows/App.ui", self)
         self.setWindowTitle("TRANSONIC")
 
-        self.config_path = "tmp/config.yaml"
-        self.wd = "examples/stenosed_tube"
-        self.doe_path = "testing/DOE.csv"
-
         #Buttons
         self.config_button.clicked.connect(self.create_config)
         self.run_button.clicked.connect(self.run_config)
     
+    def create_config(self):
+        print('Creating config file...')
+        self.config_settings = ConfigSettings()
+        self.config_settings.config_updated.connect(self.handle_config_updated)
+        self.config_settings.show()
+
+    def handle_config_updated(self, path_attributes):
+        # Process the config data after the window is closed
+        self.path_attrs = path_attributes
+
+
     def run_config(self):
 
-        config_path = self.config_path
+        config_path = self.path_attrs['config_path']
     
         if os.path.exists(config_path) == False:
-            self.warning_label.SetText(f"Warning: No file found in the provided path: {config_path}")
+            self.warning_label.setText(f"Warning: No file found in the provided path: {config_path}")
         
         try: 
             config_data = load_config(config_path)
@@ -100,17 +137,11 @@ class MainWindow(QMainWindow):
         summary_df.to_csv(os.path.join(results_dir, 'eval_outputs.csv'))
         print(f"Results created! They can be found in {results_dir}/eval_outputs.csv\n")
 
-
         
 
-    def create_config(self):
-        print("Creating config file...")
-        if not os.path.exists("./tmp"):
-            tmp_dir = "./tmp"
-            os.makedirs(tmp_dir)
 
-        self.config_settings = ConfigSettings()
-        self.config_settings.show()
+
+
             
 
 if __name__ == "__main__":
