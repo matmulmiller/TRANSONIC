@@ -1,83 +1,73 @@
 import pandas as pd
 import os.path as path
+import sys
+import PyQt5
 
+from PyQt5 import QtCore, QtGui, uic, QtWidgets
+from PyQt5.QtWidgets import QApplication
 from tqdm import tqdm
 from src.transonic.scripts.E_curves import *
 from src.transonic.modules.system_class import System
-from src.transonic.modules.utilities import *
+from src.transonic.modules.utilities import parse_args, solve, load_config, get_model_class, load_DOE, create_results_folder
 from src.transonic.scripts.model_eval import *
+from src.transonic.scripts.gui import MainWindow
 
-
-def main():
+def interface() -> int:
 
     args = parse_args()
-    config = load_config(args.config)
+    if args.gui:
+        if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
-    results_folder = create_results_folder(config['wd'])
+        if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+        print("GUI mode engaged.")
+        gui_main()
+    else:
+        print("CLI mode engaged.")
+        cli_main()
+    return 0
+
+def gui_main() -> int:
+    app = QApplication(sys.argv)
+    mainWindow = MainWindow()
+    mainWindow.show()
+    sys.exit(app.exec_())
+    return 0
+
+
+def cli_main() -> int:
+    
+    config_path = input("Please provide the directory of the config file.\n\t~")
+    
+    if os.path.exists(config_path) == False:
+        print(f"Warning: No file found in the provided path: {config_path}")
+    
+    try: 
+        config_data = load_config(config_path)
+        results_dir = create_results_folder(config_data['wd'])
+    except FileNotFoundError:
+        print(f"Error in finding config file.\n")
+        pass
 
     # Generates the E curves and E_theta curves
-    generate_curves(config['wd'], config['input'], config['doe'])
-
+    generate_curves(config_data['wd'], config_data['input'], config_data['doe'])
 
     # Grabs the desired model class specified in config file
-    model_name = config['model']
-    model_class = get_model_class(
-        f"src.transonic.models.{model_name}", 
-        model_name
-    )
-
+    model_class = get_model_class(config_data)
 
     # Load design of experiments document
-    doe = load_DOE(config['doe'])
+    doe = load_DOE(config_data['doe'])
 
-
-    summary_df = pd.DataFrame(
-        columns=[
-            *config['parameters'],
-            'RAE',
-            'MAE', 
-            'avg_residual', 
-            'std_of_residual'], 
-        index=doe.index
-    )
-
-    for id in tqdm(doe.index):
-
-        S = System(id, config['wd'])
-        S.get_system_characteristics(doe)
-
-        model_instance = fit_model(model_class, config['model'], S, config)
-
-        S.predicted_curves(S.C.time, model_instance.predict(S.C.time))
-
-        metrics = generate_model_summary(S) 
-
-        summary_df = append_model_summary(
-            summary_df, 
-            id, 
-            metrics, 
-            model_instance
-        )
-
-
-        visualize_fit(S, results_folder)
-
-
+    # Solve for the given system
+    summary_df = solve(doe, config_data, results_dir, model_class)
+    
     # Save results to specified results folder in config file
     summary_df.to_csv(path.join(results_folder, 'eval_outputs.csv'))
-
-    #plot_parser_dict = S.plotter().plot_parser_dict
-
-    for plt_idx, plot in enumerate(config['plots']):
-        S.plotter().plot_parser_dict[plot](filename=config['plot_filenames'][plt_idx])
 
     return 0
     
 if __name__ == '__main__':
-    try:
-        return_code = main()
-    except OSError as e:
-        print("\nNo file or directory error\n")
-        return_code = 1
+    return_code = interface()
     print(f'Return Code: {return_code}')
 

@@ -32,7 +32,13 @@ To use TRANSONIC, first clone the github repository via
 ```
 git clone "https:github.com/matmulmiller/TRANSONIC"
 ```
-For best practices, it is best to create a new python virtual environment to contain the package dependencies.
+For best practices, it is best to create a new python virtual environment to contain the package dependencies. You can do this by running 
+
+```
+conda env create -f environment.yaml
+```
+
+Please note that this step is necessary to have a working GUI for TRANSONIC.
 
 Next you can install the package dependencies via running the following from within the cloned base directory
 
@@ -51,6 +57,14 @@ To test out your setup, we have included an example dataset "examples/stenosed_t
 
 ```
 python3 -m src.transonic.main -c testing/configs/base.yaml
+```
+
+## Using the GUI
+
+For a more user-friendly experience, the GUI can be used by executing
+
+```
+python3 sr/transonic/src/scripts/gui.py
 ```
 
 ## General case flow
