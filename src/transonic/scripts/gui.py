@@ -4,19 +4,9 @@ import pandas as pd
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox
 from PyQt5.uic import loadUi
-from src.transonic.modules.utilities import solve, load_config, get_model_class, load_DOE, create_results_folder
+from src.transonic.modules.utilities import solve, load_config, get_model_class, load_DOE, create_results_folder, default_bounds, default_params
 from src.transonic.scripts.E_curves import generate_curves
 from PyQt5.QtCore import pyqtSignal
-
-default_params ={
-    'LFR_DZ_CSTR': '\n- [0.01, 0.99]\n- [0.01, 0.99]',
-    'TANKS_IN_SERIES': '\n- \'n\''
-}
-
-default_bounds ={
-    'LFR_DZ_CSTR': '\n- [0.01, 0.99]\n- [0.01, 0.99]',
-    'TANKS_IN_SERIES': '\n- [1, \'105\']'
-}
 
 class ConfigSettings(QWidget):
     # Define a signal to emit when the configuration is done

@@ -5,11 +5,20 @@ import yaml
 from importlib import import_module
 import os.path as path
 import os
+import platform
 from tqdm import tqdm
 from src.transonic.modules.system_class import System
 from src.transonic.scripts.model_eval import fit_model, generate_model_summary, append_model_summary, visualize_fit
 
+default_params ={
+    'LFR_DZ_CSTR': '\n- [0.01, 0.99]\n- [0.01, 0.99]',
+    'TANKS_IN_SERIES': '\n- \'n\''
+}
 
+default_bounds ={
+    'LFR_DZ_CSTR': '\n- [0.01, 0.99]\n- [0.01, 0.99]',
+    'TANKS_IN_SERIES': '\n- [1, \'105\']'
+}
 
 def type_check(dtype, value) -> bool:
     '''
@@ -55,7 +64,18 @@ def type_check(dtype, value) -> bool:
         print(f"Unexpected Error: {e}")
         return False 
         
-
+def confirm_choice(y_option="Choice saved.", n_option="Choice not saved.", header="Confirm choice?"):
+    while True:
+        choice = input(f"\n{header} [y]/n\n>").lower()
+        if choice == 'y':
+            print(f"\n{y_option}")
+            return True
+        elif choice == 'n':
+            print(f"\n{n_option}")
+            return False
+        else:
+            print("Invalid choice. Type \'y\' or \'n\'")
+        
 
 
 def ID_retrieval(df: pd.DataFrame, criteria: dict):
@@ -120,12 +140,16 @@ def get_model_class(config_yaml_data):
     return getattr(module, model_name)
 
 
-
 def load_DOE(doe_path):
     doe = pd.read_csv(doe_path, index_col=0, header=0, 
                       dtype={'VISCOUS_MODEL': 'string'})
     return doe
 
+def clear_screen():
+    if platform.system() == "Windows":
+        os.system("cls")
+    else:
+        os.system("clear")
 
 def create_results_folder(wd):
     result_dir = path.join(wd, 'results')

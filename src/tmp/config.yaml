@@ -1,0 +1,13 @@
+model: 'TANKS_IN_SERIES'
+
+doe: '/home/michael/Documents/Projects/SPADES/TRANSONIC/DOE.csv'
+
+wd: '/home/michael/Documents/Projects/SPADES/TRANSONIC/src/transonic'
+
+input: '/home/michael/Documents/Projects/SPADES/TRANSONIC/C_curves'
+
+parameters:
+- 'n'
+
+parameter_bounds: 
+- [1, '105']
