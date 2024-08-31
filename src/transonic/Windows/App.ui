@@ -55,7 +55,7 @@ File</string>
 Results</string>
     </property>
    </widget>
-<<<<<<< HEAD
+HEAD
    <widget class="QLabel" name="completion_label">
     <property name="geometry">
      <rect>

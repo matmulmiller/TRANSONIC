@@ -4,7 +4,7 @@ doe: '/home/michael/Documents/Projects/SPADES/TRANSONIC/DOE.csv'
 
 wd: '/home/michael/Documents/Projects/SPADES/TRANSONIC/src/transonic'
 
-input: '/home/michael/Documents/Projects/SPADES/TRANSONIC/C_curves'
+input: '/home/michael/Documents/Projects/SPADES/TRANSONIC/C_Curves'
 
 parameters:
 - 'n'

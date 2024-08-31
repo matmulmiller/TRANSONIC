@@ -1,0 +1,13 @@
+model: 'TANKS_IN_SERIES'
+
+doe: '/home/michael/Documents/Projects/SPADES/TRANSONIC/testing/DOE.csv'
+
+wd: '/home/michael/Documents/Projects/SPADES/TRANSONIC/examples/stenosed_tube'
+
+input: '/home/michael/Documents/Projects/SPADES/TRANSONIC/examples/stenosed_tube/raw_data/C_curves'
+
+parameters:
+- 'n'
+
+parameter_bounds: 
+- [1, '105']

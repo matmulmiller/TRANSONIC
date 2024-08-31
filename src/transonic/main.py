@@ -8,9 +8,9 @@ from PyQt5.QtWidgets import QApplication
 from tqdm import tqdm
 from src.transonic.scripts.E_curves import *
 from src.transonic.modules.system_class import System
-from src.transonic.modules.utilities import parse_args, solve, load_config, get_model_class, load_DOE, create_results_folder, confirm_choice, default_params, default_bounds, clear_screen
+from src.transonic.modules.utilities import parse_args, solve, load_config, get_model_class, load_DOE, create_results_folder, confirm_choice, default_params, default_bounds, clear_screen, run_from_config 
 from src.transonic.scripts.model_eval import *
-from src.transonic.scripts.gui import MainWindow
+from src.transonic.scripts.gui import MainWindow 
 from src.transonic.modules.style import emph1, emph2, warn, banners, in_color, symbols
 
 models = {
@@ -36,18 +36,28 @@ def interface() -> int:
         cli_main()
     return 0
 
-def get_dirs() -> tuple[str, str]:
-    file_dir = os.path.abspath(os.path.dirname(__file__))
-    src_path = os.path.abspath(os.path.dirname(file_dir))
-    root_dir = os.path.abspath(os.path.dirname(src_path))
-    return [file_dir, src_path, root_dir] #returns directory of main.py (transonic)and directory transonic is stored in (src)
-
-def gui_main() -> int:
+def gui_main():
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec_())
-    return 0
+
+def get_dirs() -> tuple[str, str, str]:
+    transonic_dir_path = os.path.abspath(os.path.dirname(__file__)) 
+    src_dir_path = os.path.abspath(os.path.dirname(transonic_dir_path))
+    root_dir_path = os.path.abspath(os.path.dirname(src_dir_path))
+    return [transonic_dir_path, src_dir_path, root_dir_path] 
+
+def set_default_paths(start_paths: list[str, str, str]) -> None:
+    usr_data_dir_path = os.path.join(start_paths[2], "usr_data")
+    wd_default = usr_data_dir_path
+    doe_path_default = os.path.join(usr_data_dir_path, "DOEs", "DOE.csv")
+    data_path_default = os.path.join(usr_data_dir_path, "raw_data", "C_curves")
+    paths.update({"Working Directory": wd_default})
+    paths.update({"DOE path": doe_path_default})
+    paths.update({"Data directory": data_path_default})
+
+
 
 def get_path(dir_name: str):
     cwds = get_dirs()
@@ -98,62 +108,106 @@ def make_case():
         bounds = default_bounds[model]
     else:
         print(f"\nThis feature is still under construction!")
-
-    #User selects the DOE path, wd, and data input path
-    while True:
-        print(f"\nPlease provide path for DOE.")
-        doe_path = get_path(dir_name="DOEs/")
-        # if not os.path.exists(doe_path):f
-        #     print(f"{doe_path} not found.")
-        if not confirm_choice(header=f"Current working directory: {get_dirs()[0]}. Okay?", y_option="Using working directory.", n_option="Type new working directory:\n"):
-            wd = get_path()
-        else:
-            wd = get_dirs()[0]
-        print(f"\nPlease provide a path for the data.")
-        data_input_path = get_path(dir_name="data_raw/")
-        if confirm_choice(header=f"\nDOE path: {doe_path}\nWorking directory: {wd}\nData path: {data_input_path}\nConfirm?"):
-            break
-        else:
-            continue
     
     #creates the yaml file from user inputs
     try:
-        tmp_dir = os.path.join(get_dirs()[1], "tmp")
-        if not os.path.exists(tmp_dir):
-            os.makedirs(tmp_dir)
-        with open(os.path.join((tmp_dir),"config.yaml"),"w") as yf:
-            yf.write(f"model: \'{model}\'\n\ndoe: \'{doe_path}\'\n\nwd: \'{wd}\'\n\ninput: \'{data_input_path}\'\n\nparameters:{params}\n\nparameter_bounds: {bounds}")
-        print("\nSuccess! Config file generated")
+        config_dir = os.path.join(paths["Working Directory"], "config")
+        if not os.path.exists(config_dir):
+            os.makedirs(config_dir)
+        with open(os.path.join((config_dir),"config.yaml"),"w") as yf:
+            yf.write(f"model: \'{model}\'\n\ndoe: \'{paths["DOE path"]}\'\n\nwd: \'{paths["Working Directory"]}\'\n\ninput: \'{paths["Data path"]}\'\n\nparameters:{params}\n\nparameter_bounds: {bounds}")
+        print("\nSuccess! Config file generated. Returning to home...")
     except:
         raise Exception
+    
+def edit_paths(): #currently only allows user to enter FULL path for each change. pretty inefficient.
+    
+    #Program displays paths and prompsts user for change selection
+    while True:
+        for idx, (name, path) in enumerate(paths.items()):
+            print(f"\n{emph1(idx+1)}: {emph2(name)}\n{path}\n{'-'*50}")
+            max_idx = idx
+        change_op = input(f"\nSelect a path to change by typing its associated number or \'r\' to return.\n> ")
+        
+    #User responds to prompt with number corresponding to path name or r to return to main
+        if change_op == 'r':
+            print(f"Exiting edit mode, returning to home...")
+            break
+        try:
+            change_op = int(change_op)
+            if change_op < 1 or change_op > max_idx + 1:
+                print(f"\n{warn("error")}: Must select a number between 0 and {max_idx+2} or \'r\'.")
+                continue
+        except ValueError:
+            print(f"\n{warn("error")}: Must select a number or \'r\'.")
+            continue
+            
+    
+    #User inserts new path and value is changed.
+        for idx, (name,path) in enumerate(paths.items()):
+            if change_op == idx+1:
+                new_path = input(f"\nType the new path for {name}\n> ")
+                paths.update({name:new_path})
+                if type(new_path) is not str: #doesn't currently work like i think it would
+                    print(f"\n{warn("warning")}: user input not path-like.")
+                continue
+    
+    print(f"{warn("heads up!")}Previously made config files are not affected by any path changes just made.")
+    
+
     
 def invalid_option():
     print(f"\nNot a valid option. Type \'h\' for help.")
 
+paths = {
+    "Working Directory": "",
+    "DOE path": "",
+    "Data directory": ""
+}
+
+def view():
+    for name, path in paths.items():
+        print(f"\n{emph1(name)}: {emph2(path)}")
+
 def help():
     commands = {
         "new": "Create a new config file through guided prompts.",
+        "edit paths": "Edit the working directory, DOE, and data path locations from their default values",
         "run": "Run a case with a config file",
-        "adv": "Create/edit a config file by changing values direclty without prompts.",
-        "clear": "Clear your screen"
+        "clear": "Clear your screen",
+        "view paths": "View paths for working directory, DOE directory, and data."
     }
-    print(f"\nThe TRANSONIC CLI currently supports the functions below. Simply type the {emph1("highlighted words")} to achieve the {emph2("descriptions")}.")
+    print(f"\nTRANSONIC currently supports the {emph1("commands")} below.")
+    print(f"\n{emph1("Command")}\n{emph2("Description")}\n{'-'*50}")
     for k, v in sorted(commands.items()):
-        print(f"\n{emph1(k)}: {emph2(v)}")
+        print(f"{emph1(k)}\n{emph2(v)}")
+        print(f"{'-'*50}")
     
 def run_case():
-    pass
+    try:
+        config_dir = os.path.join(paths["Working Directory"], "config")
+        config_path = os.path.join(config_dir, "config.yaml")
+        run_from_config(config_path)
+        print(f"\nCase completed! Check for the results in\n{emph2(paths['Working Directory'])}{emph2("/results")}\nReturning to home...")
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+
+
 
 def easter_egg():
-    print(f"\nPim, her name was Shrimpina. She's a shrimp.")
+    print(f"\nPim, her name was Shrimpina. She'd be a shrimp.")
 
 def cli_main():
     commands = {
         "new": make_case,
+        "edit paths": edit_paths,
         "run": run_case,
         "help": help,
         "h": help,
         "clear": clear_screen,
+        "view paths": view,
         "michaelstyle": easter_egg
     }
     clear_screen()
@@ -162,48 +216,19 @@ def cli_main():
     title = banner[1]
     print(f"{in_color(color,title)}\n")
 
-    
+    set_default_paths(get_dirs())
+    view()
+
     print(f"\nTyping \'help\' will bring up the list of commands and \'q\' will quit the program.")
     while True:
-        usr_command = input(f"\nType a command\n> ").strip().lower()
+        usr_command = input(f"\n> ").strip().lower()
         if usr_command == 'q':
             break
         commands.get(usr_command, invalid_option)()
     
     
     return 0
-    
-
-# def cli_main() -> int:
-    
-#     config_path = input("Please provide the directory of the config file.\n\t~")
-    
-#     if os.path.exists(config_path) == False:
-#         print(f"Warning: No file found in the provided path: {config_path}")
-    
-#     try: 
-#         config_data = load_config(config_path)
-#         results_dir = create_results_folder(config_data['wd'])
-#     except FileNotFoundError:
-#         print(f"Error in finding config file.\n")
-#         pass
-
-#     # Generates the E curves and E_theta curves
-#     generate_curves(config_data['wd'], config_data['input'], config_data['doe'])
-
-#     # Grabs the desired model class specified in config file
-#     model_class = get_model_class(config_data)
-
-#     # Load design of experiments document
-#     doe = load_DOE(config_data['doe'])
-
-#     # Solve for the given system
-#     summary_df = solve(doe, config_data, results_dir, model_class)
-    
-#     # Save results to specified results folder in config file
-#     summary_df.to_csv(path.join(results_folder, 'eval_outputs.csv'))
-
-#     return 0
+     
     
 if __name__ == '__main__':
     return_code = interface()

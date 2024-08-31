@@ -6,8 +6,10 @@ from importlib import import_module
 import os.path as path
 import os
 import platform
+from src.transonic.modules.style import warn, emph1, emph2
 from tqdm import tqdm
 from src.transonic.modules.system_class import System
+from src.transonic.scripts.E_curves import generate_curves
 from src.transonic.scripts.model_eval import fit_model, generate_model_summary, append_model_summary, visualize_fit
 
 default_params ={
@@ -76,7 +78,33 @@ def confirm_choice(y_option="Choice saved.", n_option="Choice not saved.", heade
         else:
             print("Invalid choice. Type \'y\' or \'n\'")
         
+def run_from_config(config_path):
+    
+    if os.path.exists(config_path) == False:
+        print(f"{warn("Warning")}: No file found in the provided path: {config_path}")
 
+    try: 
+        config_data = load_config(config_path)
+        results_dir = create_results_folder(config_data['wd'])
+
+    except FileNotFoundError:
+        print(f"{warn("error")}: Could not find config file.")
+        pass
+
+    # Generates the E curves and E_theta curves
+    generate_curves(config_data['wd'], config_data['input'], config_data['doe'])
+
+    # Grabs the desired model class specified in config file
+    model_class = get_model_class(config_data)
+
+    # Load design of experiments document
+    doe = load_DOE(config_data['doe'])
+
+    # Solve for the given system
+    summary_df = solve(doe, config_data, results_dir, model_class)
+    
+    # Save results to specified results folder in config file
+    summary_df.to_csv(path.join(results_dir, 'eval_outputs.csv'))
 
 def ID_retrieval(df: pd.DataFrame, criteria: dict):
     '''

@@ -127,11 +127,6 @@ class MainWindow(QMainWindow):
         summary_df.to_csv(os.path.join(results_dir, 'eval_outputs.csv'))
         print(f"Results created! They can be found in {results_dir}/eval_outputs.csv\n")
 
-        
-
-
-
-
             
 
 if __name__ == "__main__":

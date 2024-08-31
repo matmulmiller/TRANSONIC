@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import os.path as path
-from src.transonic.modules.utilities import create_results_folder
-from src.transonic.modules.utilities import load_DOE
+# from src.transonic.modules.utilities import create_results_folder
 
 
 def E_curve_generator(c_curve: pd.DataFrame, dt: float, flow_rate: float):
@@ -61,7 +60,7 @@ def E_theta_generator(E_curve, artery_volume, flow_rate):
     return E_curve
 
 def generate_curves(wd: str, cCurves: str, doe_path: str) -> None:
-    print(f"{cCurves}")
+
     # Define save location for C curves and create folder
     C_CURVES_DEST_FOLDER = path.join(wd, 'results/C_curves')
     os.makedirs(C_CURVES_DEST_FOLDER, exist_ok=True)
@@ -69,7 +68,9 @@ def generate_curves(wd: str, cCurves: str, doe_path: str) -> None:
     os.makedirs(path.join(wd, 'results/Etheta_curves'), exist_ok=True)
 
     # Load DOE document for getting case parameters
-    doe = load_DOE(doe_path)
+    doe = pd.read_csv(doe_path, index_col=0, header=0, 
+                      dtype={'VISCOUS_MODEL': 'string'})
+
     # Iterate over every concentration curve in the data directory.
     for dirpath, dirnames, filenames in os.walk(cCurves):
         for filename in filenames:
