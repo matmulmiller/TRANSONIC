@@ -2,7 +2,6 @@ FROM continuumio/miniconda3
 
 RUN apt-get update
 RUN apt-get install sudo
-RUN apt-get install -y x11-apps
 RUN apt-get install 'ffmpeg'\
     'libsm6'\ 
     'libxext6'  -y
