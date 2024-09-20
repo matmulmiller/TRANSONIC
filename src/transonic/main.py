@@ -63,7 +63,7 @@ def cli_main() -> int:
     summary_df = solve(doe, config_data, results_dir, model_class)
     
     # Save results to specified results folder in config file
-    summary_df.to_csv(path.join(results_folder, 'eval_outputs.csv'))
+    summary_df.to_csv(path.join(results_dir, 'eval_outputs.csv'))
 
     return 0
     
