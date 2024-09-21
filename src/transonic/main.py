@@ -8,7 +8,14 @@ from PyQt5.QtWidgets import QApplication
 from tqdm import tqdm
 from src.transonic.scripts.E_curves import *
 from src.transonic.modules.system_class import System
-from src.transonic.modules.utilities import parse_args, solve, load_config, get_model_class, load_DOE, create_results_folder
+from src.transonic.modules.utilities import (
+    parse_args, 
+    solve, 
+    load_config, 
+    get_model_class, 
+    load_DOE, 
+    create_results_folder
+)
 from src.transonic.scripts.model_eval import *
 from src.transonic.scripts.gui import MainWindow
 
