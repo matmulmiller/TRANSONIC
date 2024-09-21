@@ -12,6 +12,7 @@ from src.transonic.modules.system_class import System
 from src.transonic.scripts.E_curves import generate_curves
 from src.transonic.scripts.model_eval import fit_model, generate_model_summary, append_model_summary, visualize_fit
 
+
 default_params ={
     'LFR_DZ_CSTR': '\n- [0.01, 0.99]\n- [0.01, 0.99]',
     'TANKS_IN_SERIES': '\n- \'n\''
@@ -21,6 +22,7 @@ default_bounds ={
     'LFR_DZ_CSTR': '\n- [0.01, 0.99]\n- [0.01, 0.99]',
     'TANKS_IN_SERIES': '\n- [1, \'105\']'
 }
+
 
 def type_check(dtype, value) -> bool:
     '''
@@ -66,6 +68,7 @@ def type_check(dtype, value) -> bool:
         print(f"Unexpected Error: {e}")
         return False 
         
+
 def confirm_choice(y_option="Choice saved.", n_option="Choice not saved.", header="Confirm choice?"):
     while True:
         choice = input(f"\n{header} [y]/n\n>").lower()
@@ -78,18 +81,25 @@ def confirm_choice(y_option="Choice saved.", n_option="Choice not saved.", heade
         else:
             print("Invalid choice. Type \'y\' or \'n\'")
         
+
 def run_from_config(config_path):
     
     if os.path.exists(config_path) == False:
         print(f"{warn("Warning")}: No file found in the provided path: {config_path}")
 
-    try: 
+    try:
         config_data = load_config(config_path)
         results_dir = create_results_folder(config_data['wd'])
 
     except FileNotFoundError:
-        print(f"{warn("error")}: Could not find config file.")
-        pass
+        raise print(f"{warn('error')}: Could not find config file at {config_path}.")
+        
+    except KeyError as e:
+        print(f"{warn('error')}: Missing key in config file: {str(e)}")
+        
+    except Exception as e:
+        print(f"{warn('error')}: An unexpected error occurred: {str(e)}")
+
 
     # Generates the E curves and E_theta curves
     generate_curves(config_data['wd'], config_data['input'], config_data['doe'])
@@ -105,6 +115,7 @@ def run_from_config(config_path):
     
     # Save results to specified results folder in config file
     summary_df.to_csv(path.join(results_dir, 'eval_outputs.csv'))
+
 
 def ID_retrieval(df: pd.DataFrame, criteria: dict):
     '''
@@ -142,9 +153,7 @@ def ID_retrieval(df: pd.DataFrame, criteria: dict):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Pull YAML file entries and optionally add GUI.')
-    # parser.add_argument('--config','-c', required=False, const=None help='Enter location '
-    #                     ' of config file.')
-    parser.add_argument('--gui', '-w', action='store_true', help='Deploys the GUI.')
+    parser.add_argument('--gui', '-g', action='store_true', help='Deploys the GUI.')
     return parser.parse_args()
 
 
@@ -173,16 +182,19 @@ def load_DOE(doe_path):
                       dtype={'VISCOUS_MODEL': 'string'})
     return doe
 
+
 def clear_screen():
     if platform.system() == "Windows":
         os.system("cls")
     else:
         os.system("clear")
 
+
 def create_results_folder(wd):
     result_dir = path.join(wd, 'results')
     os.makedirs(result_dir, exist_ok=True)
     return result_dir
+
 
 def solve(doe: pd.DataFrame, config: dict, results_dir: str, model_class) -> pd.DataFrame:
 
@@ -215,6 +227,7 @@ def solve(doe: pd.DataFrame, config: dict, results_dir: str, model_class) -> pd.
         visualize_fit(S, results_dir)
         
     return summary_df
+
 
 if __name__ == '__main__':
     doe = pd.read_csv("data/CASE_PARAMETERS.csv", 

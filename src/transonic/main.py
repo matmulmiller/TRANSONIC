@@ -20,21 +20,13 @@ models = {
     "Double dispersion": "DOUBLE_DISPERSION"
 }
 
-def interface() -> int:
+paths = {
+    "Working Directory": "",
+    "DOE path": "",
+    "Data directory": ""
+}
 
-    args = parse_args()
-    if args.gui:
-        if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
-            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
-        if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
-            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
-        print("GUI mode engaged.")
-        gui_main()
-    else:
-        print("CLI mode engaged.")
-        cli_main()
-    return 0
 
 def gui_main():
     app = QApplication(sys.argv)
@@ -42,11 +34,13 @@ def gui_main():
     mainWindow.show()
     sys.exit(app.exec_())
 
+
 def get_dirs() -> tuple[str, str, str]:
     transonic_dir_path = os.path.abspath(os.path.dirname(__file__)) 
     src_dir_path = os.path.abspath(os.path.dirname(transonic_dir_path))
     root_dir_path = os.path.abspath(os.path.dirname(src_dir_path))
     return [transonic_dir_path, src_dir_path, root_dir_path] 
+
 
 def set_default_paths(start_paths: list[str, str, str]) -> None:
     usr_data_dir_path = os.path.join(start_paths[2], "usr_data")
@@ -56,7 +50,6 @@ def set_default_paths(start_paths: list[str, str, str]) -> None:
     paths.update({"Working Directory": wd_default})
     paths.update({"DOE path": doe_path_default})
     paths.update({"Data directory": data_path_default})
-
 
 
 def get_path(dir_name: str):
@@ -72,6 +65,7 @@ def get_path(dir_name: str):
             return os.path.abspath(path)
         except Exception as e:
             print(f"\nError: {e}. Try again.")
+
 
 def make_case():
 
@@ -115,10 +109,11 @@ def make_case():
         if not os.path.exists(config_dir):
             os.makedirs(config_dir)
         with open(os.path.join((config_dir),"config.yaml"),"w") as yf:
-            yf.write(f"model: \'{model}\'\n\ndoe: \'{paths["DOE path"]}\'\n\nwd: \'{paths["Working Directory"]}\'\n\ninput: \'{paths["Data path"]}\'\n\nparameters:{params}\n\nparameter_bounds: {bounds}")
+            yf.write(f"model: \'{model}\'\n\ndoe: \'{paths["DOE path"]}\'\n\nwd: \'{paths["Working Directory"]}\'\n\ninput: \'{paths["Data directory"]}\'\n\nparameters:{params}\n\nparameter_bounds: {bounds}")
         print("\nSuccess! Config file generated. Returning to home...")
     except:
         raise Exception
+    
     
 def edit_paths(): #currently only allows user to enter FULL path for each change. pretty inefficient.
     
@@ -159,15 +154,12 @@ def edit_paths(): #currently only allows user to enter FULL path for each change
 def invalid_option():
     print(f"\nNot a valid option. Type \'h\' for help.")
 
-paths = {
-    "Working Directory": "",
-    "DOE path": "",
-    "Data directory": ""
-}
+
 
 def view():
     for name, path in paths.items():
         print(f"\n{emph1(name)}: {emph2(path)}")
+    
 
 def help():
     commands = {
@@ -182,6 +174,7 @@ def help():
     for k, v in sorted(commands.items()):
         print(f"{emph1(k)}\n{emph2(v)}")
         print(f"{'-'*50}")
+
     
 def run_case():
     try:
@@ -195,9 +188,9 @@ def run_case():
         print(exc_type, fname, exc_tb.tb_lineno)
 
 
-
 def easter_egg():
     print(f"\nPim, her name was Shrimpina. She'd be a shrimp.")
+
 
 def cli_main():
     commands = {
@@ -228,7 +221,23 @@ def cli_main():
     
     
     return 0
-     
+
+
+def interface() -> int:
+
+    args = parse_args()
+    if args.gui:
+        if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+
+        if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+            PyQt5.QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+        print("GUI mode engaged.")
+        gui_main()
+    else:
+        print("CLI mode engaged.")
+        cli_main()
+    return 0
     
 if __name__ == '__main__':
     return_code = interface()
